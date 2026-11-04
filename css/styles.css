@@ -78,6 +78,12 @@ body {
   text-shadow: 1px 1px 0 #000;
 }
 body.touch .help { display: none; }
+.credit {
+  margin: .5em 0 0;
+  color: #ffe9a8; font-family: system-ui, sans-serif; font-weight: 700;
+  font-size: clamp(12px, 2.2vw, 18px);
+  text-shadow: 1px 1px 0 #000, 0 0 8px rgba(0, 0, 0, .5);
+}
 @keyframes bob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-10px) rotate(4deg); } }
 @keyframes blink { to { visibility: hidden; } }
 
@@ -185,6 +191,22 @@ body.touch .help { display: none; }
   25% { transform: scale(1); }
   80% { opacity: 1; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.4); }
+}
+
+.signature {
+  margin: .55em 0 0;
+  font-family: system-ui, sans-serif; font-weight: 700; font-size: .78em;
+  color: #1d2b8f; opacity: .65;
+}
+
+/* Short landscape screens (phones): compact end screen so face, card and signature all fit */
+@media (max-height: 480px) {
+  .big-face { height: clamp(56px, 22vh, 120px); }
+  #congrats { margin: 0 0 .2em; font-size: clamp(20px, 4.6vw, 40px); }
+  .score-card { padding: .4em 1em .5em; font-size: clamp(11px, 2vw, 15px); }
+  .score-best { margin: .05em 0 .35em; }
+  .download { margin-top: .35em; }
+  .signature { margin-top: .3em; }
 }
 
 /* Toast */

@@ -119,6 +119,11 @@ export const SCORE = {
   BEST_KEY: 'dd-best',
 };
 
+export const AUTHOR = {
+  NAME: 'Rubén Codina',
+  SHORT: 'Rubén',
+};
+
 export const SHARE = {
   URL: 'https://gamehappybirthday.netlify.app/',
   TITLE: '¡Feliz cumpleaños, David!',

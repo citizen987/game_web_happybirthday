@@ -1,6 +1,6 @@
 # David Dash 🎂
 
-Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspirado en los plataformas de velocidad de las consolas de 16 bits: corres, saltas, recoges monedas, esquivas cangrejos y abejas y llegas a la bandera de meta, donde te espera una celebración con fuegos artificiales y un "¡FELICIDADES, DAVID!".
+Juego web de plataformas 2D hecho por **Rubén Codina** como regalo de cumpleaños para David. Inspirado en los plataformas de velocidad de las consolas de 16 bits: corres, saltas, recoges monedas, esquivas cangrejos y abejas y llegas a la bandera de meta, donde te espera una celebración con fuegos artificiales y un "¡FELICIDADES, DAVID!".
 
 **Jugar:** https://gamehappybirthday.netlify.app/
 
@@ -106,4 +106,4 @@ Los detalles y la puesta en marcha desde cero están en [docs/deployment.md](doc
 
 ## Créditos
 
-Código, gráficos y música originales. La foto de David (`assets/head.png`) se usa únicamente para este regalo personal.
+Idea, código, gráficos y música: **Rubén Codina**, como regalo de cumpleaños para David. Todo es original. La foto de David (`assets/head.png`) se usa únicamente para este regalo personal.

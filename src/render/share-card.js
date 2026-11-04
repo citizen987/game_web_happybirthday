@@ -1,4 +1,4 @@
-import { HEAD_SPRITE, SHARE } from '../config.js';
+import { AUTHOR, HEAD_SPRITE, SHARE } from '../config.js';
 import { formatPoints, formatTime } from '../utils/format.js';
 import { mulberry32 } from '../utils/math.js';
 
@@ -26,7 +26,10 @@ export function createShareCard({ headImage, result, size = SHARE.CARD_SIZE }) {
   });
   if (headImage) drawHead(ctx, headImage, size, u);
   drawScoreBox(ctx, result, size, u);
-  drawFittedText(ctx, 'Juega y felicítale en gamehappybirthday.netlify.app', size / 2, 1035 * u, 34 * u, size * 0.92, {
+  drawFittedText(ctx, `Un regalo de ${AUTHOR.NAME}`, size / 2, 1008 * u, 32 * u, size * 0.92, {
+    font: BODY_FONT, weight: 800, fill: '#ffe9a8', stroke: 'rgba(29,43,143,0.85)', strokeWidth: 8 * u,
+  });
+  drawFittedText(ctx, 'Juega y felicítale en gamehappybirthday.netlify.app', size / 2, 1056 * u, 30 * u, size * 0.92, {
     font: BODY_FONT, weight: 700, fill: '#ffffff', stroke: 'rgba(29,43,143,0.85)', strokeWidth: 8 * u,
   });
 

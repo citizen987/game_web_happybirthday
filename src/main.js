@@ -1,7 +1,7 @@
 // Composition root: creates every module, wires them together and runs the loop.
 import { createSfx } from './audio/sfx.js';
 import { MusicPlayer } from './audio/music.js';
-import { ASSETS, HEAD_SPRITE, LIVES, SCORE, SUPER, TIMESTEP, WIN } from './config.js';
+import { ASSETS, AUTHOR, HEAD_SPRITE, LIVES, SCORE, SUPER, TIMESTEP, WIN } from './config.js';
 import { AudioEngine } from './core/audio.js';
 import { submitBestScore } from './core/best-score.js';
 import { Display } from './core/display.js';
@@ -164,6 +164,8 @@ if (/[?&]debug\b/.test(location.search)) {
     teleport: (x) => game.teleport(x, display.width),
   };
 }
+
+console.info(`%c🎂 David Dash — un regalo de ${AUTHOR.NAME} para David`, 'font-weight:bold;color:#c08a10');
 
 // Fixed 60 Hz simulation, rendering once per animation frame.
 let last = performance.now();
