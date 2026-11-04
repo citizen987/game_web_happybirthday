@@ -43,8 +43,10 @@ export const ROLL = {
   CHARGE_DECAY: 1 / 32,    // fraction of the charge lost per frame
   RELEASE_BASE: 4.8,       // release speed = BASE + floor(charge) * PER_CHARGE (4.8..7.2)
   RELEASE_PER_CHARGE: 0.3,
-  H_BALL: 15,
-  RADIUS: 7,
+  // Ball ≈ 2/3 of the standing character's height (~34 px with the head).
+  RADIUS: 11,
+  H_BALL: 22,              // hitbox height (ball diameter minus 1 px)
+  HALF_W_BALL: 9,          // hitbox half width for enemies/coins (terrain keeps PLAYER.HALF_W)
 };
 
 export const PLAYER = {

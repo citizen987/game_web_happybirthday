@@ -1,9 +1,7 @@
 import { PHYSICS, PLAYER } from '../config.js';
 import { spawnParticles } from './effects.js';
 import { spillCoins } from './pickups.js';
-import { clearBall, isAttacking, killPlayer, playerTop } from './player.js';
-
-const HW = PLAYER.HALF_W;
+import { clearBall, isAttacking, killPlayer, playerHalfW, playerTop } from './player.js';
 
 // Enemy hitboxes relative to (x, y): crabs stand on the ground, bees are centered.
 function hitbox(e) {
@@ -68,13 +66,14 @@ function destroyEnemy(world, e, top, bottom) {
 export function updateEnemies(world, canInteract) {
   const p = world.player;
   const pTop = playerTop(p);
+  const pHalf = playerHalfW(p);
   for (const e of world.enemies) {
     if (!e.alive) continue;
     moveEnemy(e, world.terrain);
     if (!canInteract) continue;
 
     const { half, top, bottom } = hitbox(e);
-    const overlap = p.x + HW > e.x - half && p.x - HW < e.x + half && p.y > top && pTop < bottom;
+    const overlap = p.x + pHalf > e.x - half && p.x - pHalf < e.x + half && p.y > top && pTop < bottom;
     if (!overlap) continue;
 
     const fromAbove = !p.onGround && p.vyPre > 0.3 && p.prevY <= top + 6;

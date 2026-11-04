@@ -80,7 +80,7 @@ cualquier salto ──▶ airBall ──aterrizar──▶ de pie (↓ mantenido
 ```
 
 - `rolling`: sin aceleración. Rozamiento a la mitad, frenada contra la dirección y pendientes ×2,5 cuesta abajo y ×0,6 cuesta arriba. Velocidad máxima `ROLL.MAX_V`.
-- `isBall(p)` = `rolling || charging || airBall`. Hitbox baja (`ROLL.H_BALL`) y, mientras se es bola, **`isAttacking(p)`**: cualquier contacto destruye al enemigo (rebote solo si caes desde arriba; rodando no se pierde velocidad).
+- `isBall(p)` = `rolling || charging || airBall`. Bola de radio `ROLL.RADIUS` (≈ 2/3 de la altura de pie) con hitbox a juego frente a enemigos y monedas (`ROLL.H_BALL`, `ROLL.HALF_W_BALL` vía `playerHalfW`; contra el terreno se mantiene `PLAYER.HALF_W`) y, mientras se es bola, **`isAttacking(p)`**: cualquier contacto destruye al enemigo (rebote solo si caes desde arriba; rodando no se pierde velocidad).
 - `clearBall()` se llama al recibir un golpe, al morir y al llegar a la meta (la celebración se hace con la cara de David).
 - La cámara sigue más rápido a altas velocidades (`CAMERA.LERP_X_FAST`) y limita la anticipación (`MAX_LOOK`).
 - Los eventos de sonido pueden llevar parámetro: `{ name: 'charge', arg: 0..1 }` (el tono sube con la carga).

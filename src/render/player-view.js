@@ -78,8 +78,12 @@ function drawBall(ctx, p) {
       rect(ctx, cx + dx, cy + dy, 1, 1, color);
     }
   }
-  rect(ctx, cx - 3, cy - 4, 2, 1, BALL.shine);
-  rect(ctx, cx - 4, cy - 3, 1, 2, BALL.shine);
+  // Highlight: small arc on the upper-left, scaled with the radius.
+  const sx = cx - Math.round(r * 0.55);
+  const sy = cy - Math.round(r * 0.55);
+  rect(ctx, sx + 1, sy - 1, 3, 1, BALL.shine);
+  rect(ctx, sx - 1, sy + 1, 1, 3, BALL.shine);
+  rect(ctx, sx, sy, 1, 1, BALL.shine);
 }
 
 /**

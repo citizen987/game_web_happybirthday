@@ -1,13 +1,12 @@
 import { PLAYER, WORLD } from '../config.js';
 import { spawnParticles } from './effects.js';
-import { playerTop } from './player.js';
+import { playerHalfW, playerTop } from './player.js';
 
-const HW = PLAYER.HALF_W;
 const LOST_COIN_LIFE = 200;
 const LOST_COIN_GRACE = 25;
 
 const touchesPlayer = (p, x, y) =>
-  !p.dying && Math.abs(p.x - x) < HW + 4 && y > playerTop(p) - 4 && y < p.y + 4;
+  !p.dying && Math.abs(p.x - x) < playerHalfW(p) + 4 && y > playerTop(p) - 4 && y < p.y + 4;
 
 function collectCoin(world, x, y) {
   world.coinCount++;

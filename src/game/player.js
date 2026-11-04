@@ -39,6 +39,9 @@ export const isBall = (p) => p.rolling || p.charging || p.airBall;
 // While curled into a ball the player destroys enemies on contact from any side.
 export const isAttacking = (p) => isBall(p) && !p.hurt && !p.dying;
 
+// Half width of the body hitbox against enemies and coins (wider while a ball).
+export const playerHalfW = (p) => (isBall(p) ? ROLL.HALF_W_BALL : HW);
+
 export function playerTop(p) {
   if (isBall(p)) return p.y - ROLL.H_BALL;
   return p.y - (p.crouch ? PLAYER.H_CROUCH : PLAYER.H_STAND);
@@ -139,7 +142,7 @@ function updateGroundBall(world, p, down, jumpPressed) {
       if (jumpPressed) addCharge(world, p);
       p.charge -= p.charge * ROLL.CHARGE_DECAY;
       if (++p.dustT % 4 === 0) {
-        spawnParticles(world, p.x - p.face * 6, p.y - 2, 2, DUST, 0.8, -0.02, 12);
+        spawnParticles(world, p.x - p.face * (ROLL.RADIUS - 1), p.y - 2, 2, DUST, 0.8, -0.02, 12);
       }
       return jumpPressed;
     }
@@ -148,7 +151,7 @@ function updateGroundBall(world, p, down, jumpPressed) {
     p.rolling = true;
     p.vx = p.face * (ROLL.RELEASE_BASE + Math.floor(p.charge) * ROLL.RELEASE_PER_CHARGE);
     p.charge = 0;
-    spawnParticles(world, p.x - p.face * 8, p.y - 4, 10, DUST, 1.6, 0, 16);
+    spawnParticles(world, p.x - p.face * (ROLL.RADIUS + 1), p.y - 4, 10, DUST, 1.6, 0, 16);
     world.events.push('release');
     return false;
   }
