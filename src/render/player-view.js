@@ -58,7 +58,36 @@ const BALL = {
  * Original blue/red ball: four rotating segments (quarters), shaded on the
  * lower-right, dark outline and a fixed highlight. Drawn pixel by pixel.
  */
+const GOLD_BALL = {
+  segments: ['#ffd23a', '#ff9a1a', '#ffd23a', '#ff9a1a'],
+  shade: ['#c08a10', '#b0600a', '#c08a10', '#b0600a'],
+  outline: '#5a2a00',
+  shine: '#ffffff',
+};
+const AURA = ['#fff6a0', '#ffd23a', '#ffb000'];
+
+// Flickering golden aura (drawn behind the player): jittering ring of pixels with flame tips on top.
+export function drawAura(ctx, p, tick) {
+  const ball = isBall(p);
+  const cx = Math.round(p.x);
+  const cy = Math.round(p.y) - (ball ? ROLL.RADIUS + 1 : 17);
+  const rx = ball ? ROLL.RADIUS + 4 : 13;
+  const ry = ball ? ROLL.RADIUS + 4 : 21;
+  const n = 40;
+  for (let i = 0; i < n; i++) {
+    if ((i + tick) % 2) continue;
+    const a = (i / n) * Math.PI * 2 + tick * 0.04;
+    const jitter = 1 + Math.sin(tick * 0.35 + i * 1.7) * 1.5;
+    const flame = Math.sin(a) < -0.3 ? Math.max(0, Math.sin(tick * 0.25 + i)) * 4 : 0;
+    const x = Math.round(cx + Math.cos(a) * (rx + jitter));
+    const y = Math.round(cy + Math.sin(a) * (ry + jitter + flame));
+    const s = (i + (tick >> 2)) % 3 === 0 ? 2 : 1;
+    rect(ctx, x, y, s, s, AURA[(i + (tick >> 3)) % AURA.length]);
+  }
+}
+
 function drawBall(ctx, p) {
+  const BALL_COLORS = p.super ? GOLD_BALL : BALL;
   const r = ROLL.RADIUS;
   const cx = Math.round(p.x);
   const cy = Math.round(p.y) - r - 1;
@@ -69,11 +98,11 @@ function drawBall(ctx, p) {
       if (d > r + 0.5) continue;
       let color;
       if (d > r - 0.5) {
-        color = BALL.outline;
+        color = BALL_COLORS.outline;
       } else {
         const a = Math.atan2(dy, dx) + p.spin;
         const seg = ((Math.floor(a / quarter) % 4) + 4) % 4;
-        color = dx + dy > r * 0.6 ? BALL.shade[seg] : BALL.segments[seg];
+        color = dx + dy > r * 0.6 ? BALL_COLORS.shade[seg] : BALL_COLORS.segments[seg];
       }
       rect(ctx, cx + dx, cy + dy, 1, 1, color);
     }
@@ -81,9 +110,9 @@ function drawBall(ctx, p) {
   // Highlight: small arc on the upper-left, scaled with the radius.
   const sx = cx - Math.round(r * 0.55);
   const sy = cy - Math.round(r * 0.55);
-  rect(ctx, sx + 1, sy - 1, 3, 1, BALL.shine);
-  rect(ctx, sx - 1, sy + 1, 1, 3, BALL.shine);
-  rect(ctx, sx, sy, 1, 1, BALL.shine);
+  rect(ctx, sx + 1, sy - 1, 3, 1, BALL_COLORS.shine);
+  rect(ctx, sx - 1, sy + 1, 1, 3, BALL_COLORS.shine);
+  rect(ctx, sx, sy, 1, 1, BALL_COLORS.shine);
 }
 
 /**
@@ -142,7 +171,9 @@ export function drawPlayer(ctx, p, head) {
   if (head.ready) {
     const { FACE_X, CHIN_Y } = head.config;
     const hx = f > 0 ? ox + 2 - FACE_X : ox - 2 - (head.width - FACE_X);
-    ctx.drawImage(f > 0 ? head.right : head.left, hx, oy + chinY - CHIN_Y);
+    const gold = p.super && head.goldRight;
+    const sprite = gold ? (f > 0 ? head.goldRight : head.goldLeft) : (f > 0 ? head.right : head.left);
+    ctx.drawImage(sprite, hx, oy + chinY - CHIN_Y);
   } else {
     R(-7, chinY - 16, 14, 16, COL.skin);
     R(-7, chinY - 18, 14, 4, '#2a6ae8');

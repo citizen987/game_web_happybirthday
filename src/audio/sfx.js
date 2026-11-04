@@ -1,3 +1,4 @@
+import { LETTERS } from '../config.js';
 import { midiToFreq } from '../core/audio.js';
 
 // Each key matches a game event name emitted by the game layer.
@@ -36,6 +37,22 @@ export function createSfx(audio) {
       const f = 300 + level * 600;
       audio.tone(t, f, f * 2.2, 0.16, 'sawtooth', 0.1);
       audio.noise(t, 0.1, 0.1, 2500 + level * 3000, 'highpass');
+    }),
+
+    // index 0..4: each letter rings one step higher, so D-A-V-I-D plays a little tune.
+    letter: play((t, index = 0) => {
+      const note = LETTERS.NOTES[index] || LETTERS.NOTES[0];
+      audio.tone(t, midiToFreq(note), null, 0.12, 'square', 0.14);
+      audio.tone(t + 0.1, midiToFreq(note + 7), null, 0.12, 'square', 0.12);
+      audio.tone(t + 0.2, midiToFreq(note + 12), null, 0.35, 'triangle', 0.22);
+    }),
+
+    transform: play((t) => {
+      audio.noise(t, 0.6, 0.25, 3000, 'highpass');
+      audio.tone(t, 200, 1600, 0.6, 'sawtooth', 0.12);
+      const chord = [72, 76, 79, 84];
+      chord.forEach((n, i) => audio.tone(t + 0.55 + i * 0.07, midiToFreq(n), null, 0.6, 'square', 0.1));
+      audio.tone(t + 0.85, midiToFreq(96), null, 0.5, 'triangle', 0.2);
     }),
 
     release: play((t) => {

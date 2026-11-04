@@ -1,4 +1,6 @@
+import { LETTERS } from '../config.js';
 import { rect } from './draw.js';
+import { drawGlyph, GLYPH_H, GLYPH_W } from './letter-glyphs.js';
 
 // World-space drawing of coins, enemies, checkpoints, goal flag and effects.
 
@@ -46,6 +48,23 @@ function drawRingSpan(ctx, from, to, y, edgeRow, rimLeft, rimRight) {
   rect(ctx, from, y, w, 1, RING_GOLD);
   if (rimLeft) rect(ctx, from, y, 1, 1, RING_RIM);
   if (rimRight) rect(ctx, to - 1, y, 1, 1, RING_RIM);
+}
+
+const LETTER_GOLD = (row) => (row < 2 ? '#fff6c0' : row < 5 ? '#ffd23a' : '#e09a00');
+
+// Big golden letters bobbing in place, with two orbiting sparkles.
+export function drawLetters(ctx, v, letters) {
+  const scale = 2;
+  for (const l of letters) {
+    if (l.taken || l.x < v.cx - 20 || l.x > v.cx + v.w + 20) continue;
+    const bob = Math.round(Math.sin(v.tick * 0.08 + l.index) * 2);
+    const x = l.x - (GLYPH_W * scale) / 2;
+    const y = l.y - (GLYPH_H * scale) / 2 + bob;
+    drawGlyph(ctx, LETTERS.WORD[l.index], x, y, scale, LETTER_GOLD, '#5a2a00');
+    const a = v.tick * 0.12 + l.index;
+    rect(ctx, Math.round(l.x + Math.cos(a) * 10), Math.round(l.y + bob + Math.sin(a) * 10), 1, 1, '#ffffff');
+    rect(ctx, Math.round(l.x - Math.cos(a) * 10), Math.round(l.y + bob - Math.sin(a) * 10), 1, 1, '#fff6a0');
+  }
 }
 
 export function drawCoins(ctx, v, coins, lostCoins) {

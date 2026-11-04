@@ -1,9 +1,11 @@
+import { LETTERS } from '../config.js';
 import { formatPoints, formatTime } from '../utils/format.js';
 
 const COUNT_UP_DELAY_MS = 1100;
 const COUNT_UP_MS = 900;
 const TOAST_MS = 2600;
 const NBSP = String.fromCharCode(160);
+const BANNER_MS = 2300;
 
 // DOM overlays: title screen, end screen (win with score card / gameover without it),
 // toast, and the body[data-state] flag that CSS uses to show/hide touch controls.
@@ -22,6 +24,9 @@ export class Screens {
     this.bestEl = doc.getElementById('score-best');
     this.subtitleEl = doc.getElementById('end-subtitle');
     this.toastEl = doc.getElementById('toast');
+    this.lettersEl = doc.getElementById('score-letters');
+    this.bannerEl = doc.getElementById('banner');
+    this.bannerTimer = null;
     this.countToken = 0;
     this.toastTimer = null;
     this.downloadUrl = null;
@@ -58,6 +63,7 @@ export class Screens {
     this.timeEl.textContent = formatTime(result.seconds);
     this.bestEl.textContent = record.isNewBest ? '🏆 ¡Nuevo récord!' : `Récord: ${formatPoints(record.best)}`;
     this.bestEl.classList.toggle('is-new', record.isNewBest);
+    this.renderLetters(result);
     this.countUp(result);
     this.winEl.classList.remove('hidden');
   }
@@ -68,6 +74,38 @@ export class Screens {
     this.subtitleEl.textContent = subtitle;
     this.countToken++;
     this.winEl.classList.remove('hidden');
+  }
+
+  // Big animated headline over the game (Súper David transformation); restarts its CSS animation.
+  showBanner(text) {
+    this.bannerEl.textContent = text;
+    this.bannerEl.classList.add('hidden');
+    void this.bannerEl.offsetWidth;
+    this.bannerEl.classList.remove('hidden');
+    clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(() => this.bannerEl.classList.add('hidden'), BANNER_MS);
+  }
+
+  hideBanner() {
+    clearTimeout(this.bannerTimer);
+    this.bannerEl.classList.add('hidden');
+  }
+
+  renderLetters(result) {
+    this.lettersEl.textContent = '';
+    Array.from(LETTERS.WORD).forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = result.letters[i] ? 'letter on' : 'letter';
+      span.textContent = ch;
+      this.lettersEl.appendChild(span);
+    });
+    if (result.letterPoints > 0) {
+      const pts = document.createElement('span');
+      pts.className = 'letters-points';
+      pts.textContent = `+${formatPoints(result.letterPoints)}`;
+      this.lettersEl.appendChild(pts);
+    }
+    this.lettersEl.classList.toggle('complete', result.wordComplete);
   }
 
   hideWin() {

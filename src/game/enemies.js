@@ -82,8 +82,8 @@ export function updateEnemies(world, canInteract) {
       p.vy = PHYSICS.STOMP_BOUNCE;
       p.onGround = false;
       p.onPlat = null;
-    } else if (isAttacking(p)) {
-      // Rolling through keeps all momentum.
+    } else if (isAttacking(p) || world.super) {
+      // Rolling through (or Súper David's invincibility) keeps all momentum.
       destroyEnemy(world, e, top, bottom);
     } else {
       hurtPlayer(world, e.x);

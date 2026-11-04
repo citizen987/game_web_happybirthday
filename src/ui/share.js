@@ -10,8 +10,11 @@ export function buildShareText(result) {
     return `🎂 ¡Feliz cumpleaños, David! Te he felicitado jugando a David Dash, `
       + `el juego de tu cumpleaños. ¿Llegarás tú a la meta? 👉 ${SHARE.URL}`;
   }
+  const extra = result.wordComplete
+    ? ' ¡Y junté las letras de DAVID para convertirme en Súper David! ✨'
+    : result.letterCount > 0 ? ` Conseguí ${result.letterCount} de las 5 letras de DAVID.` : '';
   return `🎂 ¡Feliz cumpleaños, David! Te he felicitado corriendo en David Dash: `
-    + `${formatPoints(result.total)} puntos (${result.coins} monedas en ${formatTime(result.seconds)}). `
+    + `${formatPoints(result.total)} puntos (${result.coins} monedas en ${formatTime(result.seconds)}).${extra} `
     + `¿Quién se anima a superarlo? 👉 ${SHARE.URL}`;
 }
 

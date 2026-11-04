@@ -51,16 +51,30 @@ Valores derivados de `PHYSICS` en `config.js`:
 - **Las abejas a `y0` ≈ suelo − 38** se pueden pasar por debajo. Más bajas obligan a saltar o agacharse.
 - **No pongas un borde de suelo más alto que STEP_UP justo tras un hueco,** a menos que quieras un muro.
 
-## 4. Meta y duración
+## 4. Letras D-A-V-I-D
+
+Cinco letras doradas, ligeramente fuera del camino principal pero alcanzables con un salto normal:
+
+| Letra | Posición |
+|---|---|
+| D | Sobre el arco de aros del primer hueco (`M.g1 + 36`, y 86) |
+| A | Encima de la plataforma más alta de la escalera (`M.i + 242`, y 36) |
+| V | Sobre la plataforma alta (`M.p + 140`, y 28) |
+| I | Sobre el hueco de la plataforma móvil (`M.g3 + 50`, y 80) |
+| D | Entre las plataformas del último gran hueco (`M.g6 + 60`, y 92) |
+
+Regla: la parte baja de la letra debe estar a **≤ 82 px** por encima del suelo o de la plataforma desde la que se salta (pico del salto ~60 px + cuerpo). Las letras sobre huecos se cogen en pleno salto. Al moverlas, mantén el orden D-A-V-I-D a lo largo del nivel para que la transformación llegue en el último tramo.
+
+## 5. Meta y duración
 
 - La bandera se coloca en `t.end - 70`.
 - Un jugador que no se detiene termina el nivel en ~45 s. Uno normal, que recoge monedas y esquiva, tarda entre 60 y 90 s. Para alargarlo, añade tramos antes de `mark('u')`.
 
-## 5. Decoración
+## 6. Decoración
 
 Se genera de forma determinista (`mulberry32(7)`) sobre el suelo continuo: flores, matas, arbustos, rocas y palmeras. Para variarla, cambia la semilla o las probabilidades en el bloque `Decoration`. Para un tipo nuevo, añade su función a `DECO_DRAWERS` en `render/terrain-view.js`.
 
-## 6. Comprobar un cambio
+## 7. Comprobar un cambio
 
 ```js
 // http://localhost:8000/?debug  →  consola

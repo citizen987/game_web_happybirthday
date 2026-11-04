@@ -122,6 +122,7 @@ body.touch .help { display: none; }
   margin: .1em 0 .6em; max-width: 26em;
   font-family: system-ui, sans-serif; font-weight: 800; font-size: 1.05em; line-height: 1.3;
 }
+#win[data-mode="gameover"] .score-letters,
 #win[data-mode="gameover"] .stats,
 #win[data-mode="gameover"] .score-best,
 #win[data-mode="win"] .end-subtitle { display: none; }
@@ -141,6 +142,37 @@ body.touch .help { display: none; }
   display: inline-block; margin-top: .55em;
   font-family: system-ui, sans-serif; font-weight: 700; font-size: .85em;
   color: #1d2b8f;
+}
+
+/* D-A-V-I-D letters on the score card */
+.score-letters {
+  display: flex; gap: .25em; justify-content: center; align-items: baseline;
+  margin-top: .25em; font-weight: 900; font-size: 1.15em; letter-spacing: .05em;
+}
+.score-letters .letter { color: #c4cae6; }
+.score-letters .letter.on { color: #ffb000; text-shadow: 0 2px 0 #1d2b8f; }
+.score-letters .letters-points {
+  margin-left: .6em; font-family: system-ui, sans-serif; font-size: .7em; font-weight: 800; color: #1d2b8f;
+}
+.score-letters.complete .letter.on { animation: rainbow 2s linear infinite; }
+
+/* "¡SÚPER DAVID!" transformation banner */
+.banner {
+  position: fixed; z-index: 25; left: 0; right: 0; top: 18%;
+  text-align: center; pointer-events: none;
+  font-size: clamp(30px, 8vw, 96px); font-weight: 900; font-style: italic; letter-spacing: .04em;
+  color: #ffd23a;
+  text-shadow:
+    3px 3px 0 #b05a00, -3px -3px 0 #b05a00, 3px -3px 0 #b05a00, -3px 3px 0 #b05a00,
+    0 0 24px rgba(255, 230, 120, .9), 0 8px 0 rgba(0, 0, 0, .3);
+  animation: banner 2.2s ease-out forwards;
+}
+@keyframes banner {
+  0% { opacity: 0; transform: scale(.3); }
+  15% { opacity: 1; transform: scale(1.15); }
+  25% { transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.4); }
 }
 
 /* Toast */

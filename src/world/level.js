@@ -56,6 +56,7 @@ export function buildLevel() {
     platforms: [],
     checkpoints: [],
     deco: [],
+    letters: [],
   };
 
   // --- Placement helpers ---
@@ -135,6 +136,14 @@ export function buildLevel() {
   bee(M.u + 60, M.u + 240, 122);
   crab(M.u + 100, M.u + 380);
   bee(M.u + 260, M.u + 420, 110);
+
+  // --- Letters D-A-V-I-D (slightly off the main path, always reachable with a normal jump) ---
+  const letter = (x, y) => level.letters.push({ x: Math.round(x), y: Math.round(y) });
+  letter(M.g1 + 36, 86);          // D: above the coin arc over the first gap
+  letter(M.i + 242, 36);          // A: over the top stair platform
+  letter(M.p + 140, 28);          // V: over the high platform
+  letter(M.g3 + 50, 80);          // I: above the moving-platform gap
+  letter(M.g6 + 60, 92);          // D: between the last gap's platforms
 
   // --- Checkpoints ---
   level.checkpoints.push(M.e + 140, M.i + 380, M.j + 40, M.l + 40, M.p + 30, M.s + 40);

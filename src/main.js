@@ -1,7 +1,7 @@
 // Composition root: creates every module, wires them together and runs the loop.
 import { createSfx } from './audio/sfx.js';
 import { MusicPlayer } from './audio/music.js';
-import { ASSETS, HEAD_SPRITE, LIVES, SCORE, TIMESTEP, WIN } from './config.js';
+import { ASSETS, HEAD_SPRITE, LIVES, SCORE, SUPER, TIMESTEP, WIN } from './config.js';
 import { AudioEngine } from './core/audio.js';
 import { submitBestScore } from './core/best-score.js';
 import { Display } from './core/display.js';
@@ -40,6 +40,7 @@ const game = new Game({
   },
   onShowWin: (result) => showResult(result),
   onGameOver: () => showGameOver(),
+  onTransform: () => screens.showBanner(SUPER.BANNER),
 });
 
 // Score card + share image. The PNG is generated now (not on tap) because
@@ -90,6 +91,7 @@ function playAgain() {
   shareCardToken++;
   shareFile = null;
   screens.hideWin();
+  screens.hideBanner();
   input.reset();
   game.restart(display.width);
 }
@@ -152,6 +154,8 @@ if (/[?&]debug\b/.test(location.search)) {
     get player() { return game.world.player; },
     get coins() { return game.world.coinCount; },
     get lives() { return game.world.lives; },
+    get super() { return game.world.super; },
+    get freeze() { return game.freeze; },
     get world() { return game.world; },
     get result() { return game.result; },
     get shareFile() { return shareFile; },

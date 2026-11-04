@@ -77,6 +77,25 @@ export const CAMERA = {
   LERP_Y: 0.08,
 };
 
+// Collectible letters spelling the birthday boy's name; all five transform the player.
+export const LETTERS = {
+  WORD: 'DAVID',
+  POINTS: 1000,            // per letter
+  WORD_BONUS: 5000,        // extra for completing the word
+  NOTES: [72, 76, 79, 84, 88], // pickup chime climbs with each letter
+};
+
+// "Súper David": invincible to enemies (falls still cost a life), faster, golden hair + aura.
+export const SUPER = {
+  SPEED: 1.5,              // × running top speed and max speed
+  ACC: 2,                  // × ground/air acceleration
+  JUMP: 1.12,              // × jump impulse
+  SEQUENCE_FRAMES: 70,     // freeze + flash while transforming
+  BANNER: '¡SÚPER DAVID!',
+  MUSIC_BPM: 176,
+  MUSIC_TRANSPOSE: 12,
+};
+
 export const LIVES = {
   START: 3,
   DEATH_JUMP_V: -5,

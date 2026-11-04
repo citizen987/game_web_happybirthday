@@ -1,26 +1,32 @@
-import { LIVES, PLAYER, VIEW, WIN, WORLD } from '../config.js';
+import { LIVES, PLAYER, SUPER, VIEW, WIN, WORLD } from '../config.js';
 import { rand } from '../utils/math.js';
 import { Camera } from './camera.js';
-import { spawnConfetti, spawnFirework, updateEffects } from './effects.js';
+import { spawnConfetti, spawnFirework, spawnParticles, updateEffects } from './effects.js';
 import { updateEnemies } from './enemies.js';
 import { updatePickups } from './pickups.js';
 import { clearBall, createPlayer, updatePlayer } from './player.js';
 import { computeScore } from './score.js';
 import { createWorld, updatePlatforms } from './world.js';
 
+const SUPER_SPARKS = ['#fff6a0', '#ffd23a', '#ffffff'];
+
 /**
  * Game state machine: 'title' -> 'play' -> 'win' | 'gameover' (-> 'play' on restart).
  * Pure logic: no DOM. Feedback goes out through `sfx` (by event name), `music`,
- * and the `onStateChange` / `onShowWin(result)` / `onGameOver()` callbacks.
+ * and the `onStateChange` / `onShowWin(result)` / `onGameOver()` / `onTransform()` callbacks.
  */
 export class Game {
-  constructor({ level, sfx, music, onStateChange = () => {}, onShowWin = () => {}, onGameOver = () => {} }) {
+  constructor({
+    level, sfx, music,
+    onStateChange = () => {}, onShowWin = () => {}, onGameOver = () => {}, onTransform = () => {},
+  }) {
     this.level = level;
     this.sfx = sfx;
     this.music = music;
     this.onStateChange = onStateChange;
     this.onShowWin = onShowWin;
     this.onGameOver = onGameOver;
+    this.onTransform = onTransform;
     this.state = 'title';
     this.tick = 0;
     this.camera = new Camera();
@@ -33,6 +39,7 @@ export class Game {
     this.endShown = false;  // end overlay visible (enables Enter/Space to restart)
     this.playFrames = 0;
     this.result = null;     // score; stays null on gameover
+    this.freeze = 0;        // frames left in the Súper David transformation sequence
     this.camera.look = 0;
     this.camera.follow(this.world.player, viewW, this.level.terrain.end, true);
   }
@@ -83,6 +90,7 @@ export class Game {
       coins: this.world.coinCount,
       frames: this.playFrames,
       totalCoins: this.level.coins.length,
+      letters: this.world.letters.map((l) => l.taken),
     });
     this.setState('win');
     this.endT = 0;
@@ -102,6 +110,10 @@ export class Game {
     this.tick++;
     const jumpPressed = input.consumeJump();
     if (this.state === 'title') return;
+    if (this.freeze > 0) {
+      this.updateTransform(viewW);
+      return;
+    }
     const playing = this.state === 'play';
     if (playing) this.playFrames++;
 
@@ -111,12 +123,45 @@ export class Game {
     if (playing) this.checkLifeLoss(viewW);
     updateEnemies(w, this.state === 'play' && !w.player.dying);
     if (updatePickups(w) && this.state === 'play') this.triggerWin();
+    if (w.transformPending && this.state === 'play' && !w.player.dying) this.startTransform();
+    if (w.super && this.tick % 3 === 0 && Math.abs(w.player.vx) > 1) {
+      spawnParticles(w, w.player.x - Math.sign(w.player.vx) * 6, w.player.y - 14, 1, SUPER_SPARKS, 0.4, -0.01, 16);
+    }
     updateEffects(w, this.camera.y, VIEW.HEIGHT);
     if (this.state === 'win') this.updateWin(viewW);
     else if (this.state === 'gameover') this.updateGameOver(viewW);
     this.camera.follow(w.player, viewW, w.terrain.end);
     if (w.fade > 0) w.fade--;
     if (w.shake > 0) w.shake--;
+    if (w.flash > 0) w.flash--;
+    this.flushEvents();
+  }
+
+  // All five letters: freeze the action, flash and play the fanfare, then go golden.
+  startTransform() {
+    const w = this.world;
+    w.transformPending = false;
+    this.freeze = SUPER.SEQUENCE_FRAMES;
+    w.flash = 24;
+    this.music.stop();
+    w.events.push('transform');
+    this.onTransform();
+  }
+
+  updateTransform(viewW) {
+    const w = this.world;
+    const p = w.player;
+    this.freeze--;
+    if (this.freeze % 3 === 0) spawnParticles(w, p.x, p.y - 16, 4, SUPER_SPARKS, 2.2, 0, 22);
+    updateEffects(w, this.camera.y, VIEW.HEIGHT);
+    if (w.flash > 0) w.flash--;
+    if (this.freeze === 0) {
+      w.super = true;
+      p.super = true;
+      w.flash = 12;
+      this.music.start({ bpm: SUPER.MUSIC_BPM, transpose: SUPER.MUSIC_TRANSPOSE });
+    }
+    this.camera.follow(p, viewW, w.terrain.end);
     this.flushEvents();
   }
 

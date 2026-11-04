@@ -99,7 +99,12 @@ function drawScoreBox(ctx, result, size, u) {
   ctx.fill();
 
   const headline = result ? `${formatPoints(result.total)} PUNTOS` : '¡FELIZ CUMPLEAÑOS!';
-  const detail = result ? `${result.coins} monedas · ${formatTime(result.seconds)}` : '¿Llegarás tú a la meta?';
+  let detail = '¿Llegarás tú a la meta?';
+  if (result) {
+    detail = `${result.coins} monedas · ${formatTime(result.seconds)}`;
+    if (result.wordComplete) detail += ' · ¡SÚPER DAVID!';
+    else if (result.letterCount > 0) detail += ` · ${result.letterCount}/5 letras`;
+  }
   drawFittedText(ctx, headline, size / 2, y + 95 * u, 86 * u, w * 0.9, {
     font: TITLE_FONT, fill: '#e8282e',
   });

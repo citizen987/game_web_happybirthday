@@ -1,4 +1,4 @@
-import { LIVES, PHYSICS as P, PLAYER, ROLL } from '../config.js';
+import { LIVES, PHYSICS as P, PLAYER, ROLL, SUPER } from '../config.js';
 import { approach, clamp } from '../utils/math.js';
 import { spawnParticles } from './effects.js';
 
@@ -31,6 +31,7 @@ export function createPlayer(terrain, x) {
     vyPre: 0,
     dying: false,
     dieT: 0,
+    super: false,     // mirrors world.super (golden form)
   };
 }
 
@@ -99,14 +100,15 @@ export function updatePlayer(world, input, jumpPressed, mode) {
   p.coyote = p.onGround ? P.COYOTE_FRAMES : Math.max(0, p.coyote - 1);
   p.crouch = p.onGround && D && !p.rolling && !p.charging;
 
-  applyHorizontalForces(p, ix);
+  p.super = world.super;
+  const lim = motionLimits(p);
+  applyHorizontalForces(p, ix, lim);
   if (mode === 'win') p.vx *= 0.9;
-  const maxV = isBall(p) ? ROLL.MAX_V : P.MAX_V;
-  p.vx = clamp(p.vx, -maxV, maxV);
+  p.vx = clamp(p.vx, -lim.maxV, lim.maxV);
   if (ix !== 0 && !p.rolling) p.face = ix;
 
   if (p.jumpBuf > 0 && p.coyote > 0) {
-    p.vy = P.JUMP_V;
+    p.vy = lim.jumpV;
     p.onGround = false;
     p.onPlat = null;
     p.coyote = 0;
@@ -180,7 +182,19 @@ function addCharge(world, p) {
   world.events.push({ name: 'charge', arg: p.charge / ROLL.CHARGE_MAX });
 }
 
-function applyHorizontalForces(p, ix) {
+// Movement limits for this step: Súper David runs, accelerates and jumps harder.
+function motionLimits(p) {
+  const s = p.super;
+  return {
+    top: P.TOP * (s ? SUPER.SPEED : 1),
+    acc: P.ACC * (s ? SUPER.ACC : 1),
+    airAcc: P.AIR_ACC * (s ? SUPER.ACC : 1),
+    maxV: (isBall(p) ? ROLL.MAX_V : P.MAX_V) * (s ? SUPER.SPEED : 1),
+    jumpV: P.JUMP_V * (s ? SUPER.JUMP : 1),
+  };
+}
+
+function applyHorizontalForces(p, ix, lim) {
   if (p.onGround) {
     if (p.charging) {
       p.vx = approach(p.vx, 0, P.CROUCH_FRIC * 2);
@@ -195,12 +209,12 @@ function applyHorizontalForces(p, ix) {
       if (p.crouch) p.vx = approach(p.vx, 0, P.CROUCH_FRIC);
       else if (ix !== 0) {
         if (ix * p.vx < 0) p.vx += ix * P.DECEL;
-        else if (Math.abs(p.vx) < P.TOP) p.vx = ix * Math.min(Math.abs(p.vx) + P.ACC, P.TOP);
-        else p.vx = approach(p.vx, ix * P.TOP, 0.02);
+        else if (Math.abs(p.vx) < lim.top) p.vx = ix * Math.min(Math.abs(p.vx) + lim.acc, lim.top);
+        else p.vx = approach(p.vx, ix * lim.top, 0.02);
       } else p.vx = approach(p.vx, 0, P.FRIC);
     }
-  } else if (ix !== 0 && ix * p.vx < P.TOP) {
-    p.vx = ix * Math.min(ix * p.vx + P.AIR_ACC, P.TOP);
+  } else if (ix !== 0 && ix * p.vx < lim.top) {
+    p.vx = ix * Math.min(ix * p.vx + lim.airAcc, lim.top);
   }
 }
 

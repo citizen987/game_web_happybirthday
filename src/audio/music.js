@@ -26,14 +26,21 @@ export class MusicPlayer {
     this.audio = audio;
     this.track = track;
     this.stepDur = 60 / track.bpm / 2;
+    this.transpose = 0;
     this.timer = null;
     this.nextTime = 0;
     this.step = 0;
   }
 
-  start() {
+  /**
+   * @param {{bpm?: number, transpose?: number}} [variant] e.g. the faster, higher "super" version;
+   *   omitted = the track as written.
+   */
+  start({ bpm = this.track.bpm, transpose = 0 } = {}) {
     if (!this.audio.ready) return;
     this.stop();
+    this.stepDur = 60 / bpm / 2;
+    this.transpose = transpose;
     this.step = 0;
     this.nextTime = this.audio.now + 0.1;
     this.timer = setInterval(() => this.schedule(), SCHEDULER_MS);
@@ -63,7 +70,7 @@ export class MusicPlayer {
     const note = melody[step];
     if (note) {
       const hold = melody[(step + 1) % melody.length] === 0 ? 1.8 : 0.85;
-      audio.tone(at, midiToFreq(note), null, this.stepDur * hold, 'square', 0.12, bus);
+      audio.tone(at, midiToFreq(note + this.transpose), null, this.stepDur * hold, 'square', 0.12, bus);
     }
     const root = bassRoots[Math.floor(step / 8)];
     audio.tone(at, midiToFreq(root + bassPattern[step % 8]), null, this.stepDur * 0.9, 'triangle', 0.3, bus);

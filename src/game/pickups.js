@@ -1,4 +1,4 @@
-import { PLAYER, WORLD } from '../config.js';
+import { WORLD } from '../config.js';
 import { spawnParticles } from './effects.js';
 import { playerHalfW, playerTop } from './player.js';
 
@@ -54,6 +54,17 @@ export function updatePickups(world) {
     } else if (c.age > LOST_COIN_GRACE && touchesPlayer(p, c.x, c.y)) {
       lost.splice(i, 1);
       collectCoin(world, c.x, c.y);
+    }
+  }
+
+  // Letters: wider grab area than coins (they float off the main path).
+  for (const l of world.letters) {
+    if (l.taken || p.dying) continue;
+    if (Math.abs(p.x - l.x) < playerHalfW(p) + 7 && l.y + 8 > playerTop(p) - 4 && l.y - 8 < p.y + 4) {
+      l.taken = true;
+      spawnParticles(world, l.x, l.y, 16, ['#fff6a0', '#ffd23a', '#ffffff'], 2, 0.02, 24);
+      world.events.push({ name: 'letter', arg: l.index });
+      if (!world.super && world.letters.every((x) => x.taken)) world.transformPending = true;
     }
   }
 

@@ -8,6 +8,8 @@ export class HeadSprite {
     this.right = null;
     this.left = null;
     this.icon = null;  // small HUD lives icon
+    this.goldRight = null; // Súper David: blue hair recoloured gold
+    this.goldLeft = null;
     this.image = null; // original photo, reused for the share card
     const img = new Image();
     img.onload = () => {
@@ -33,6 +35,8 @@ export class HeadSprite {
     fc.drawImage(out, -out.width, 0);
     this.right = out;
     this.left = flipped;
+    this.goldRight = recolorHairGold(out);
+    this.goldLeft = recolorHairGold(flipped);
     this.icon = this.bakeAt(img, ICON_SRC, HUD_ICON_W);
   }
 
@@ -69,6 +73,34 @@ export class HeadSprite {
     outlineAndHardenAlpha(oc, out.width, out.height);
     return out;
   }
+}
+
+// Copy of a head sprite with the blue hair pixels turned gold (face, ears and
+// outline keep their colours). Returns null if pixels cannot be read (file://).
+function recolorHairGold(src) {
+  const out = document.createElement('canvas');
+  out.width = src.width;
+  out.height = src.height;
+  const ctx = out.getContext('2d');
+  ctx.drawImage(src, 0, 0);
+  let data;
+  try {
+    data = ctx.getImageData(0, 0, out.width, out.height);
+  } catch {
+    console.warn('Golden hair skipped: serve the game over HTTP');
+    return null;
+  }
+  const px = data.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const r = px[i], g = px[i + 1], b = px[i + 2];
+    if (px[i + 3] === 0 || !(b > r + 40 && b > g + 10)) continue;
+    const light = Math.min(1, (r + g + b) / 3 / 170);
+    px[i] = Math.round(Math.min(255, 150 + 120 * light));
+    px[i + 1] = Math.round(Math.min(235, 95 + 140 * light));
+    px[i + 2] = Math.round(20 + 60 * light * light);
+  }
+  ctx.putImageData(data, 0, 0);
+  return out;
 }
 
 function outlineAndHardenAlpha(ctx, W, H) {

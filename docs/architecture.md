@@ -86,6 +86,21 @@ cualquier salto ──▶ airBall ──aterrizar──▶ de pie (↓ mantenido
 - Los eventos de sonido pueden llevar parámetro: `{ name: 'charge', arg: 0..1 }` (el tono sube con la carga).
 - `render/player-view.js` repite la condición de `isBall` para no depender de `game/`.
 
+## Letras D-A-V-I-D y Súper David
+
+- `world/level.js` define `letters` (5 posiciones) y `game/world.js` las copia con `taken`, más `super`, `transformPending` y `flash`.
+- `game/pickups.js`: al coger una letra emite `{ name: 'letter', arg: índice }` (la nota sube con cada letra) y, con las 5, marca `transformPending`.
+- `Game.startTransform()`: congela la acción durante `SUPER.SEQUENCE_FRAMES` (`game.freeze`; el cronómetro no avanza), con destello, fanfarria `transform` y `onTransform()` (rótulo DOM "¡SÚPER DAVID!"). Al terminar, `world.super = true` y la música arranca en variante `{ bpm: SUPER.MUSIC_BPM, transpose: SUPER.MUSIC_TRANSPOSE }`.
+- **Efectos de `super`:**
+  - `player.js` aplica multiplicadores (`motionLimits`: velocidad ×1,5, aceleración ×2, salto ×1,12).
+  - `enemies.js` destruye a cualquier enemigo al contacto y nunca hiere.
+  - **Las caídas siguen costando vida**; el estado `super` vive en `world`, así que se conserva al reaparecer y solo se reinicia con una partida nueva.
+- **Render:**
+  - `head-sprite.js` genera `goldRight`/`goldLeft` recoloreando a dorado los píxeles azules del pelo (requiere HTTP).
+  - `player-view.js` dibuja el aura (`drawAura`) y la bola dorada.
+  - `hud.js` dibuja las ranuras `D A V I D` con los glifos de `letter-glyphs.js`.
+- **Puntuación:** `computeScore({ ..., letters })` suma `LETTERS.POINTS` por letra y `LETTERS.WORD_BONUS` si se completa el nombre. El panel, el texto de compartir y la tarjeta lo reflejan.
+
 ## Vidas
 
 - `world.lives` empieza en `LIVES.START` (3).

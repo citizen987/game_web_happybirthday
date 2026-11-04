@@ -34,6 +34,7 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 | `__dd.player` | Objeto del jugador (posición, velocidad, flags) |
 | `__dd.coins` | Monedas recogidas |
 | `__dd.lives` | Vidas restantes |
+| `__dd.super` / `__dd.freeze` | Súper David activo / frames restantes de la secuencia de transformación |
 | `__dd.world` | Estado completo de la partida (para pruebas: `world.coinCount = 0`, `world.enemies`…) |
 | `__dd.result` | Resultado final (`null` hasta llegar a la meta) |
 | `__dd.shareFile` | `File` PNG de la tarjeta, cuando ya está generado |
@@ -58,6 +59,8 @@ Sin `?debug` no se expone nada.
 | Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` (y `LIVES.GAMEOVER_SUBTITLE` para el fin de partida) |
 | Cambiar las vidas iniciales o la animación de muerte | `src/config.js` → `LIVES` |
 | Ajustar rodar o la carga en parado | `src/config.js` → `ROLL` |
+| Puntos de las letras, notas o poderes de Súper David | `src/config.js` → `LETTERS` y `SUPER` |
+| Mover una letra | `src/world/level.js` → bloque `Letters` |
 | Cambiar el aspecto de la bola | `render/player-view.js` → `BALL` / `drawBall` |
 | Cambiar la fórmula de puntuación | `src/config.js` → `SCORE` (y `game/score.js` si cambia la forma) |
 | Cambiar el texto que se comparte | `ui/share.js` → `buildShareText` |
@@ -85,4 +88,5 @@ No hay CI. Cada push a `main` se publica directamente, así que verifica en loca
 5. Sonido y botón de silencio (también con la tecla M).
 6. Emulación móvil en DevTools (en horizontal): los botones táctiles funcionan. En vertical aparece el aviso de girar.
 7. Al terminar: aparece el panel con las monedas, el tiempo y los puntos, y "Compartir felicitación" abre el menú nativo en el móvil. En escritorio sin Web Share, copia el texto y aparece "Descargar tarjeta". Para borrar el récord: `localStorage.removeItem('dd-best')`.
-8. Si cambiaste el nivel: comprueba con `?debug` y `teleport` que cada hueco nuevo se puede saltar.
+8. Letras: cada una se ilumina en el marcador; la quinta muestra "¡SÚPER DAVID!", el pelo dorado y el aura; los enemigos mueren al tocarlos y caer sigue restando vida. Para probar rápido: `__dd.world.letters.forEach(l => l.taken = true)` y coger cualquier letra pendiente, o teletransportarse a ellas.
+9. Si cambiaste el nivel: comprueba con `?debug` y `teleport` que cada hueco nuevo se puede saltar.

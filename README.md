@@ -21,7 +21,9 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 - **Vidas:** empiezas con 3. Pierdes una al caer al vacío o al recibir un golpe sin monedas, y reapareces en el último checkpoint. Con 0 vidas la partida termina sin puntuación, pero con la felicitación (y también se puede compartir). Marcador arriba a la izquierda con la cara de David.
 - Música chiptune original y efectos de sonido generados con WebAudio, con botón de silencio.
 - Controles táctiles multitáctiles y aviso para girar el móvil cuando está en vertical.
-- **Puntuación final** según las monedas y el tiempo, con récord personal guardado en el navegador.
+- **Letras D-A-V-I-D** escondidas por el nivel (+1.000 puntos cada una y +5.000 por formar el nombre). El marcador superior central las ilumina al cogerlas.
+- **Súper David:** con las cinco letras, el pelo de la foto se vuelve dorado, aparece un aura amarilla y suena una versión acelerada de la música. Corre más, acelera más y salta un poco más. Es **invencible a los enemigos** (los destruye al tocarlos), pero las caídas siguen costando vida. Dura hasta la meta y se conserva al reaparecer.
+- **Puntuación final** según las monedas, el tiempo y las letras, con récord personal guardado en el navegador.
 - **Compartir la felicitación:** abre el menú nativo de compartir de Android/iOS con un texto y una tarjeta-imagen (la cara de David y la puntuación). Si el navegador no lo permite, copia el texto y ofrece descargar la tarjeta.
 
 ## Controles
@@ -70,7 +72,7 @@ Hay más detalle en [docs/architecture.md](docs/architecture.md).
 ## Puntuación
 
 ```
-Puntos = monedas × 100 + max(0, 120 − segundos) × 50
+Puntos = monedas × 100 + max(0, 120 − segundos) × 50 + letras × 1.000 (+5.000 si se forma DAVID)
 ```
 
 El tiempo cuenta solo mientras se juega (la pausa del móvil en vertical no suma). Los golpes hacen perder monedas, así que la fórmula ya penaliza los choques. Los valores se ajustan en `SCORE` (`src/config.js`).

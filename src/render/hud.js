@@ -1,4 +1,6 @@
+import { LETTERS } from '../config.js';
 import { drawCoin } from './entities-view.js';
+import { drawGlyph, GLYPH_W } from './letter-glyphs.js';
 
 // 3x5 bitmap font, row-major, '1' = filled pixel.
 const GLYPHS = {
@@ -26,8 +28,23 @@ function drawCounter(ctx, text, x, y) {
   drawPixelText(ctx, text, x, y, 2, '#ffffff');
 }
 
-// Screen-space HUD, top-left: [David's face] x lives   [ring] x coins.
-export function drawHud(ctx, { lives, coinCount, icon }) {
+const SLOT_STEP = GLYPH_W + 4;
+
+// Top-center D A V I D: dim until collected, gold when taken, shimmering in super form.
+function drawLetterSlots(ctx, letters, viewW, tick, superForm) {
+  const word = LETTERS.WORD;
+  const x0 = Math.round((viewW - word.length * SLOT_STEP + 4) / 2);
+  for (let i = 0; i < word.length; i++) {
+    const taken = letters[i] && letters[i].taken;
+    const shimmer = superForm && ((tick >> 2) + i) % 5 === 0;
+    const fill = taken ? (shimmer ? () => '#ffffff' : (row) => (row < 3 ? '#fff2a0' : '#ffc21a')) : () => '#6c78b0';
+    drawGlyph(ctx, word[i], x0 + i * SLOT_STEP, 6, 1, fill, '#1a1030');
+  }
+}
+
+// Screen-space HUD: [David's face] x lives   [ring] x coins (top-left), D A V I D (top-center).
+export function drawHud(ctx, { lives, coinCount, icon, letters, viewW, tick, superForm }) {
+  drawLetterSlots(ctx, letters, viewW, tick, superForm);
   if (icon) ctx.drawImage(icon, 4, 2);
   else {
     ctx.fillStyle = '#f3c39b';
