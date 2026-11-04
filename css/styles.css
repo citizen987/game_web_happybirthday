@@ -243,6 +243,31 @@ body.touch .help { display: none; }
 }
 #mute svg { width: 100%; height: 100%; fill: #fff; display: block; }
 
+/* Pause button (left of mute, only during play) and overlay */
+#pause {
+  position: fixed; z-index: 30;
+  top: calc(8px + env(safe-area-inset-top));
+  right: calc(58px + env(safe-area-inset-right));
+  width: 42px; height: 42px; padding: 9px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, .55);
+  background: rgba(0, 0, 0, .3);
+  cursor: pointer;
+  display: none;
+}
+body[data-state="play"] #pause { display: block; }
+#pause svg { width: 100%; height: 100%; fill: #fff; display: block; }
+#pause-overlay { z-index: 28; background: rgba(5, 8, 30, .55); }
+.pause-card {
+  padding: 1em 2em 1.1em; border-radius: 18px;
+  background: rgba(255, 255, 255, .95); color: #1d2b8f;
+  box-shadow: 0 6px 0 #1d2b8f, 0 12px 24px rgba(0, 0, 0, .35);
+  font-size: clamp(14px, 2.6vw, 20px);
+}
+.pause-title { font-size: 2.2em; font-weight: 900; letter-spacing: .12em; margin-bottom: .35em; }
+.pause-help { margin: .6em 0 0; font-family: system-ui, sans-serif; font-weight: 700; font-size: .8em; opacity: .65; }
+body.touch .pause-help { display: none; }
+
 /* Touch controls */
 #touch { position: fixed; inset: 0; z-index: 10; pointer-events: none; display: none; }
 #touch.show { display: block; }

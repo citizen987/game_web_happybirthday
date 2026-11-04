@@ -26,6 +26,9 @@ export class Screens {
     this.toastEl = doc.getElementById('toast');
     this.lettersEl = doc.getElementById('score-letters');
     this.bannerEl = doc.getElementById('banner');
+    this.pauseBtn = doc.getElementById('pause');
+    this.pauseEl = doc.getElementById('pause-overlay');
+    this.resumeEl = doc.getElementById('resume');
     this.bannerTimer = null;
     this.countToken = 0;
     this.toastTimer = null;
@@ -43,6 +46,23 @@ export class Screens {
 
   onPlayAgain(handler) {
     this.againEl.addEventListener('click', handler);
+  }
+
+  onPauseToggle(handler) {
+    this.pauseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handler();
+    });
+    this.resumeEl.addEventListener('click', handler);
+  }
+
+  isPauseControl(target) {
+    return target instanceof Node && (this.pauseBtn.contains(target) || this.pauseEl.contains(target));
+  }
+
+  setPaused(paused) {
+    this.pauseEl.classList.toggle('hidden', !paused);
+    this.pauseBtn.setAttribute('aria-label', paused ? 'Continuar' : 'Pausa');
   }
 
   onShare(handler) {

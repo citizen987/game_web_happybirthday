@@ -34,6 +34,7 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 | `__dd.player` | Objeto del jugador (posición, velocidad, flags) |
 | `__dd.coins` | Monedas recogidas |
 | `__dd.lives` | Vidas restantes |
+| `__dd.paused` | Juego en pausa |
 | `__dd.super` / `__dd.freeze` | Súper David activo / frames restantes de la secuencia de transformación |
 | `__dd.world` | Estado completo de la partida (para pruebas: `world.coinCount = 0`, `world.enemies`…) |
 | `__dd.result` | Resultado final (`null` hasta llegar a la meta) |
@@ -86,7 +87,7 @@ No hay CI. Cada push a `main` se publica directamente, así que verifica en loca
 2. Una partida completa hasta la bandera: celebración y "Volver a jugar".
 3. Caer a un hueco devuelve al último checkpoint.
 4. Rodar (↓ en movimiento), cargar (↓ + saltar varias veces, soltar ↓) y saltar convierten al personaje en bola, que destruye enemigos al tocarlos. Pisar un enemigo lo elimina; tocarlo de lado con monedas las hace perder y parpadear; sin monedas, quita una vida. Perder las 3 vidas muestra la felicitación sin puntuación y "Intentar de nuevo" vuelve a dar 3 vidas.
-5. Sonido y botón de silencio (también con la tecla M).
+5. Sonido y botón de silencio (también con la tecla M). Pausa con el botón ⏸, P o Esc: congela el juego y el audio; al cambiar de pestaña se pausa sola.
 6. Emulación móvil en DevTools (en horizontal): los botones táctiles funcionan. En vertical aparece el aviso de girar.
 7. Al terminar: aparece el panel con las monedas, el tiempo y los puntos, y "Compartir felicitación" abre el menú nativo en el móvil. En escritorio sin Web Share, copia el texto y aparece "Descargar tarjeta". Para borrar el récord: `localStorage.removeItem('dd-best')`.
 8. Letras: cada una se ilumina en el marcador; la quinta muestra "¡SÚPER DAVID!", el pelo dorado y el aura; los enemigos mueren al tocarlos y caer sigue restando vida. Para probar rápido: `__dd.world.letters.forEach(l => l.taken = true)` y coger cualquier letra pendiente, o teletransportarse a ellas.

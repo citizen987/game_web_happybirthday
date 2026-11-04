@@ -58,12 +58,28 @@ function playAgain() {
   game.restart(display.width);
 }
 
+// Pause freezes the simulation and suspends audio; only available during play.
+function setPaused(paused) {
+  if (!game.setPaused(paused)) return;
+  screens.setPaused(paused);
+  input.reset();
+  if (paused) audio.suspend();
+  else audio.resume();
+}
+const togglePause = () => setPaused(!game.paused);
+
 // Screen-level keys handled before gameplay input.
 function handleKey(e, action) {
   if (e.code === 'KeyM') {
     audio.toggleMute();
     return true;
   }
+  if ((e.code === 'KeyP' || e.code === 'Escape') && game.state === 'play' && !e.repeat) {
+    e.preventDefault();
+    togglePause();
+    return true;
+  }
+  if (game.paused) return true;
   if (game.state === 'title') {
     if (!e.repeat) startGame();
     if (action) e.preventDefault();
@@ -82,8 +98,8 @@ function handleKey(e, action) {
 
 input = new Input({
   touchRoot: document.getElementById('touch'),
-  isTouchEnabled: () => game.state === 'play',
-  isIgnoredTarget: (target) => muteButton.contains(target),
+  isTouchEnabled: () => game.state === 'play' && !game.paused,
+  isIgnoredTarget: (target) => muteButton.contains(target) || screens.isPauseControl(target),
   onKey: handleKey,
 });
 if (prefersTouchControls()) input.enableTouchUI();
@@ -93,12 +109,20 @@ const renderer = new Renderer(display, head);
 screens.onStart(startGame);
 screens.onPlayAgain(playAgain);
 screens.onShare(() => shareFlow.share());
+screens.onPauseToggle(togglePause);
 blockBrowserGestures();
 
-window.addEventListener('pointerdown', () => audio.resume());
+window.addEventListener('pointerdown', () => {
+  if (!game.paused) audio.resume();
+});
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) audio.suspend();
-  else audio.resume();
+  // Leaving the tab/app pauses the game; coming back keeps it paused until the player resumes.
+  if (document.hidden) {
+    if (game.state === 'play') setPaused(true);
+    audio.suspend();
+  } else if (!game.paused) {
+    audio.resume();
+  }
 });
 
 function resize() {
@@ -118,6 +142,7 @@ if (/[?&]debug\b/.test(location.search)) {
     get lives() { return game.world.lives; },
     get super() { return game.world.super; },
     get freeze() { return game.freeze; },
+    get paused() { return game.paused; },
     get world() { return game.world; },
     get result() { return game.result; },
     get shareFile() { return shareFlow.file; },

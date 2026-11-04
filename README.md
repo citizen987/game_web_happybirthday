@@ -35,6 +35,7 @@ Juego web de plataformas 2D hecho por **Rubén Codina** como regalo de cumpleañ
 | Rodar (en movimiento) | ↓ / S | ▼ |
 | Carga en parado | Mantén ↓ + pulsa saltar varias veces, suelta ↓ | Mantén ▼ + toca saltar varias veces, suelta ▼ |
 | Saltar | Espacio / Z / ↑ / W | Botón grande (abajo a la derecha) |
+| Pausa | P / Esc | Botón ⏸ (arriba a la derecha). También se pausa sola al cambiar de app o de pestaña |
 | Silenciar | M | Botón 🔊 (arriba a la derecha) |
 | Volver a jugar | Enter / Espacio | Botón "Volver a jugar" |
 | Compartir | Botón "Compartir felicitación" | Botón "Compartir felicitación" |

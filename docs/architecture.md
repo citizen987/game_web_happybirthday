@@ -48,6 +48,7 @@ title ──start()──▶ play ──bandera──────▶ win ──�
 ```
 
 - `title`: escena estática detrás del overlay de inicio. La simulación no avanza.
+- **Pausa** (`game.paused`, solo en `play` y fuera de la transformación): `Game.update` no avanza y `main.js` suspende el `AudioContext`. Se activa con el botón ⏸, P/Esc o al ocultarse la pestaña, y solo se quita a mano.
 - `play`: input activo y controles táctiles visibles (`body[data-state="play"]`).
 - `gameover`: sin vidas. No hay puntuación (`game.result = null`) ni récord. Hay confeti, y en `LIVES.GAMEOVER_OVERLAY_AT` se llama a `onGameOver()`: el mismo overlay en modo `data-mode="gameover"` (felicitación, subtítulo, compartir e "Intentar de nuevo").
 - `win`: control bloqueado, saltos de alegría, fuegos artificiales y confeti. Al entrar se calcula `game.result` (`game/score.js`). En `WIN.SHOW_OVERLAY_AT` se llama a `onShowWin(result)` y aparece el overlay con el panel de puntuación.

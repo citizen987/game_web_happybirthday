@@ -28,7 +28,7 @@
   <div class="title">DAVID DASH</div>
   <p class="blink">Toca o pulsa una tecla para empezar</p>
   <p class="credit">🎁 Un regalo de Rubén Codina para David</p>
-  <p class="help">Flechas / WASD para moverte &middot; Espacio o Z para saltar &middot; Abajo corriendo para rodar &middot; Abajo + saltar para cargar &middot; M silencia</p>
+  <p class="help">Flechas / WASD para moverte &middot; Espacio o Z para saltar &middot; Abajo corriendo para rodar &middot; Abajo + saltar para cargar &middot; P pausa &middot; M silencia</p>
 </div>
 
 <div id="win" class="overlay hidden" data-mode="win">
@@ -57,6 +57,15 @@
 <div id="banner" class="banner hidden" aria-live="polite"></div>
 
 <button id="mute" type="button" aria-label="Silenciar"></button>
+<button id="pause" type="button" aria-label="Pausa"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg></button>
+
+<div id="pause-overlay" class="overlay hidden">
+  <div class="pause-card">
+    <div class="pause-title">PAUSA</div>
+    <button id="resume" type="button" class="btn btn-primary">▶ Continuar</button>
+    <p class="pause-help">P o Esc para continuar</p>
+  </div>
+</div>
 
 <div id="rotate">
   <svg viewBox="0 0 48 48"><rect x="14" y="4" width="20" height="40" rx="3"/><line x1="21" y1="38" x2="27" y2="38"/></svg>
