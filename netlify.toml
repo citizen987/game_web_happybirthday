@@ -13,3 +13,16 @@
   for = "/css/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# PWA: the service worker and manifest must always be revalidated so new
+# versions are detected right after a deploy.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"

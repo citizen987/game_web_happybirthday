@@ -99,12 +99,17 @@ El sitio está conectado al repositorio de GitHub: **cada `git push` a `main` pu
 
 Los detalles y la puesta en marcha desde cero están en [docs/deployment.md](docs/deployment.md).
 
+## Instalar como app
+
+En el móvil, desde el navegador: **"Añadir a pantalla de inicio"**. Se instala con el icono de la cara de David, se abre a pantalla completa y funciona sin conexión. Más detalles en [docs/pwa.md](docs/pwa.md).
+
 ## Documentación
 
 - [docs/architecture.md](docs/architecture.md): capas, módulos y flujo de datos.
 - [docs/development.md](docs/development.md): entorno local, depuración y verificación.
 - [docs/level-design.md](docs/level-design.md): cómo editar el nivel y sus límites jugables.
 - [docs/deployment.md](docs/deployment.md): Netlify y publicación.
+- [docs/pwa.md](docs/pwa.md): app instalable, funcionamiento sin conexión e iconos.
 
 ## Créditos
 

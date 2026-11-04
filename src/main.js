@@ -12,6 +12,7 @@ import {
   blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
 } from './ui/device.js';
 import { MuteButton } from './ui/mute-button.js';
+import { registerServiceWorker } from './ui/pwa.js';
 import { Screens } from './ui/screens.js';
 import { ShareFlow } from './ui/share-flow.js';
 import { buildLevel } from './world/level.js';
@@ -173,3 +174,4 @@ function frame(now) {
 resize();
 game.reset(display.width);
 requestAnimationFrame(frame);
+registerServiceWorker();
