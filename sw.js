@@ -57,6 +57,13 @@ const PRECACHE = [
   'src/world/terrain.js',
 ];
 
+// Navigations (any query string: ?debug, ?fbclid=...) share one cache entry.
+const SHELL_KEY = './';
+
+// A redirected response (e.g. /index.html -> /) cannot be served to a navigation,
+// so store a clean copy of its body and headers instead.
+const storable = (response) => (response.redirected ? new Response(response.body, response) : response);
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -67,7 +74,7 @@ self.addEventListener('install', (event) => {
           try {
             const response = await fetch(path, { cache: 'no-cache' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            await cache.put(path, response);
+            await cache.put(path, storable(response));
           } catch (error) {
             console.warn(`[sw] precache skipped ${path}:`, error);
           }
@@ -95,25 +102,31 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
-  if (new URL(request.url).origin !== self.location.origin) return;
-  event.respondWith(networkFirst(request));
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/.netlify/')) return; // Netlify-injected scripts: not part of the game
+  event.respondWith(networkFirst(event, request));
 });
 
-async function networkFirst(request) {
+async function networkFirst(event, request) {
   const cache = await caches.open(CACHE_NAME);
+  const key = request.mode === 'navigate' ? SHELL_KEY : request;
   try {
     const response = await fetch(request);
     if (response.ok && response.type === 'basic') {
-      cache.put(request, response.clone()).catch((error) => {
-        console.warn('[sw] cache update failed:', error);
-      });
+      // waitUntil keeps the worker alive until the offline copy is written.
+      event.waitUntil(
+        cache.put(key, storable(response.clone())).catch((error) => {
+          console.warn('[sw] cache update failed:', error);
+        }),
+      );
     }
     return response;
   } catch (error) {
-    const cached = await cache.match(request, { ignoreSearch: true });
+    const cached = await cache.match(key, { ignoreSearch: true });
     if (cached) return cached;
     if (request.mode === 'navigate') {
-      const shell = (await cache.match('index.html')) || (await cache.match('./'));
+      const shell = (await cache.match(SHELL_KEY)) || (await cache.match('index.html'));
       if (shell) return shell;
     }
     throw error;

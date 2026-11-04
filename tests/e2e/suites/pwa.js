@@ -47,4 +47,28 @@ export default async function pwa({ browser, baseUrl }) {
   } finally {
     await g.close();
   }
+
+  // Runtime offline check. The game only registers the worker over HTTPS, but
+  // localhost is a secure context, so we register it by hand here.
+  const o = await openGame(browser, baseUrl, { context: DESKTOP });
+  try {
+    await o.ev(async () => {
+      await navigator.serviceWorker.register('./sw.js');
+      await navigator.serviceWorker.ready;
+    });
+    await o.page.reload();
+    await o.page.waitForFunction(() => !!navigator.serviceWorker.controller);
+    await o.context.setOffline(true);
+    for (const path of ['/?debug', '/index.html?debug']) {
+      await o.page.goto(`${baseUrl}${path}`);
+      await o.page.waitForFunction(() => window.__dd && window.__dd.state === 'title', null, { timeout: 5000 });
+    }
+    await o.page.keyboard.press('Enter');
+    await o.page.waitForFunction(() => window.__dd.state === 'play');
+    await o.context.setOffline(false);
+    // Service worker precache warnings would show up as console warnings: none expected.
+    assertNoErrors(o.errors);
+  } finally {
+    await o.close();
+  }
 }
