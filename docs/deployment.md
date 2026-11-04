@@ -48,6 +48,10 @@ Alternativa sin git: arrastra la carpeta del proyecto a https://app.netlify.com/
 - `og:image` y `og:url` usan la **URL absoluta** de producción; si cambia el dominio, actualízalas.
 - WhatsApp y Facebook cachean la vista previa. Tras cambiar la imagen, puede tardar en verse; el [Sharing Debugger de Facebook](https://developers.facebook.com/tools/debug/) fuerza a releerla.
 
+## Archivos que no se publican
+
+Netlify publica la raíz del repo, así que `netlify.toml` oculta con **redirecciones forzadas a 404** todo lo que no es del juego: `docs/`, `tests/`, `odd/`, los scripts generadores (`assets/og/`, `assets/icons/generate_icons.py`), `README.md`, `CLAUDE.md`, `netlify.toml` y `.gitignore`. Si añades carpetas o archivos que no sean del juego en la raíz, añade su regla ahí.
+
 ## Notas
 
 - Netlify inyecta en el HTML servido un comentario y un script propio (`/.netlify/scripts/hud`). No afectan al juego.
