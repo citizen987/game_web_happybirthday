@@ -1,0 +1,12 @@
+{
+  "name": "david-dash-e2e",
+  "private": true,
+  "description": "End-to-end browser tests for David Dash (dev tooling only, never loaded by the game)",
+  "type": "module",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "devDependencies": {
+    "playwright-core": "1.49.1"
+  }
+}

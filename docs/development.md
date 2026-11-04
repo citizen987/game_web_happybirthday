@@ -5,7 +5,7 @@
 - Un navegador moderno.
 - Cualquier servidor estático: Python 3, `npx serve`, la extensión Live Server de VS Code…
 
-No hay `npm install` ni build.
+El juego no necesita `npm install` ni build. Solo la suite de pruebas (`tests/e2e/`) usa Node y `playwright-core`.
 
 ## Arrancar en local
 
@@ -80,10 +80,22 @@ Sin `?debug` no se expone nada.
 - Errores explícitos: los fallos de carga o de APIs no soportadas se registran con `console.error` o `console.warn`; no se silencian.
 - Commits con [Conventional Commits](https://www.conventionalcommits.org/).
 
+## Pruebas automáticas
+
+```bash
+cd tests/e2e
+npm install      # solo la primera vez
+npm test         # todas las suites (~95 s, casi todo es la partida completa del bot)
+npm test -- roll lives   # solo las que coincidan
+```
+
+Detalles, elección de navegador y cómo añadir suites en [tests/e2e/README.md](../tests/e2e/README.md). Todo cambio debe dejar `npm test` en verde, y cada funcionalidad nueva lleva su suite.
+
 ## Verificación antes de hacer push
 
 No hay CI. Cada push a `main` se publica directamente, así que verifica en local:
 
+0. `cd tests/e2e && npm test` en verde.
 1. Consola del navegador sin errores al cargar, jugar y terminar.
 2. Una partida completa hasta la bandera: celebración y "Volver a jugar".
 3. Caer a un hueco devuelve al último checkpoint.

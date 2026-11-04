@@ -99,15 +99,8 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 ```
 
 - `?debug` en la URL expone `window.__dd` con `state`, `player`, `coins`, `flagX`, `groundAt(x)` y `teleport(x)`. El usuario quiere mantener este hook.
-- No hay suite de tests en el repo. Para verificar un cambio con navegador headless, usa Playwright **fuera del repo** (en el scratchpad) contra el servidor local:
-  - **Partida completa:** bot que mantiene → y salta cuando hay un hueco entre 10 y 26 px por delante. Antes del refactor modular terminaba en ~45 s.
-  - **Reinicio:** tras la victoria, Enter → `state === 'play'`, 0 monedas y x = 60.
-  - **Vidas** (`?debug`): golpe con monedas → mismas vidas y monedas esparcidas; golpe sin monedas (`world.coinCount = 0` + `teleport` sobre un cangrejo) → `player.dying` y, a los ~75 frames, una vida menos y reaparición en el checkpoint; caída (`player.y = 300`, `onGround = false`) → una vida menos y se conservan las monedas; a 0 vidas → `state === 'gameover'`, overlay en `data-mode="gameover"`, sin `dd-best` y compartir sin "puntos"; "Intentar de nuevo" → 3 vidas.
-  - **Bola** (`?debug`, teclado): corriendo + ↓ → `rolling` y `vx` no aumenta; ← contra la dirección frena; por debajo de 0,3 se levanta (agachado si ↓ sigue pulsado). Cuesta abajo (`teleport(790)`, `rolling = true`) gana velocidad. Parado: ↓ + Espacio → `charging` sin saltar; al soltar ↓, `vx` entre 4,8 y 7,2. Todo salto pone `airBall`. Rodando contra un cangrejo lo destruye sin daño; andando contra él se aplican las reglas de golpe.
-  - **Letras y Súper David** (`?debug`): coger una letra = `teleport(l.x)` + `player.y = l.y + 14`, `onGround = false` (si la letra está sobre un hueco, vuelve después con `teleport(150)` o perderás una vida en la prueba). La 4.ª no transforma; la 5.ª pone `freeze > 0` y el rótulo, y luego `super === true`. En súper: `vx` llega a ~5,4; andando contra un cangrejo lo destruye sin perder monedas ni vidas; caer resta vida y mantiene `super`. Al ganar: `result.letterPoints === 10000` y el texto compartido menciona "Súper David".
-  - **Compartir:** `?debug` → `teleport(flagX - 150)` y mantener → hasta `state === 'win'`. Comprobar `__dd.result`, el panel, `__dd.shareFile` (PNG) y el `navigator.share` simulado (texto con los puntos y la URL, y un archivo adjunto).
-  - **Móvil:** viewport de 844×390 con `hasTouch`, un `pointerdown` sobre `[data-btn=right]` mueve al jugador. En 390×844 aparece el aviso de girar.
-  - Sin errores en la consola (`pageerror`).
+- **Suite E2E en el repo** (`tests/e2e/`, Playwright con `playwright-core`, servidor estático propio): `cd tests/e2e && npm install && npm test` (o `npm test -- <suite>`). Suites: `pwa`, `playthrough`, `mobile`, `share`, `lives`, `roll`, `letters`, `pause`, `feel`, `victory-song`. Todo cambio debe dejarla en verde, y cada funcionalidad nueva añade o amplía una suite (ver `tests/e2e/README.md`). Las suites usan el hook `?debug` (`window.__dd`).
+- Si añades un módulo a `src/`, añádelo también al `PRECACHE` de `sw.js` y sube `CACHE_VERSION`: la suite `pwa` falla si falta.
 - Tras cada cambio, da al usuario una checklist de verificación manual adaptada a lo modificado (ver `docs/development.md`).
 
 ## Gotchas conocidos

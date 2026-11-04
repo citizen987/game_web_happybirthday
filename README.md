@@ -110,6 +110,7 @@ En el móvil, desde el navegador: **"Añadir a pantalla de inicio"**. Se instala
 - [docs/level-design.md](docs/level-design.md): cómo editar el nivel y sus límites jugables.
 - [docs/deployment.md](docs/deployment.md): Netlify y publicación.
 - [docs/pwa.md](docs/pwa.md): app instalable, funcionamiento sin conexión e iconos.
+- [tests/e2e/README.md](tests/e2e/README.md): pruebas automáticas end-to-end (`cd tests/e2e && npm install && npm test`).
 
 ## Créditos
 
