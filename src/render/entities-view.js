@@ -2,17 +2,50 @@ import { rect } from './draw.js';
 
 // World-space drawing of coins, enemies, checkpoints, goal flag and effects.
 
-// Spinning coin: sx is the horizontal scale (0 = edge-on, 1 = facing camera).
+const RING_OUTER = 5;
+const RING_INNER = 2.6;
+const RING_RIM = '#b0700c';
+const RING_GOLD = '#ffd23a';
+const RING_SHINE = '#fff6c0';
+
+// Spinning golden hoop: sx is the horizontal scale (0 = edge-on, 1 = facing camera).
+// Drawn row by row as two gold spans around a transparent hole; edge-on it collapses to a bar.
 export function drawCoin(ctx, cx, cy, sx) {
-  for (let r = -4; r < 4; r++) {
+  for (let r = -RING_OUTER; r < RING_OUTER; r++) {
     const yy = r + 0.5;
-    const full = Math.sqrt(16 - yy * yy);
-    const w = Math.max(1, Math.round(full * 2 * sx));
-    const x0 = cx - (w >> 1);
-    rect(ctx, x0, cy + r, w, 1, '#b0700c');
-    if (w > 2 && r > -4 && r < 3) rect(ctx, x0 + 1, cy + r, w - 2, 1, '#ffd23a');
+    const ow = Math.max(1, Math.round(Math.sqrt(RING_OUTER * RING_OUTER - yy * yy) * 2 * sx));
+    const x0 = cx - (ow >> 1);
+    const inHole = yy * yy < RING_INNER * RING_INNER;
+    const iw = inHole ? Math.round(Math.sqrt(RING_INNER * RING_INNER - yy * yy) * 2 * sx) : 0;
+    const edgeRow = r === -RING_OUTER || r === RING_OUTER - 1;
+
+    if (iw > 0 && ow - iw >= 2) {
+      const h0 = cx - (iw >> 1);
+      const h1 = h0 + iw;
+      drawRingSpan(ctx, x0, h0, cy + r, edgeRow, true, false);
+      drawRingSpan(ctx, h1, x0 + ow, cy + r, edgeRow, false, true);
+    } else {
+      drawRingSpan(ctx, x0, x0 + ow, cy + r, edgeRow, true, true);
+    }
   }
-  if (sx > 0.45) rect(ctx, cx - Math.round(sx * 2), cy - 2, 1, 2, '#fff6c0');
+  if (sx > 0.45) {
+    const hx = cx - Math.round(sx * (RING_OUTER - 1));
+    rect(ctx, hx, cy - 3, 1, 2, RING_SHINE);
+  }
+}
+
+// One horizontal slice of the hoop: gold, with a dark rim pixel on the outer silhouette only
+// (hole edges stay gold so the thin band keeps its color at 10 px).
+function drawRingSpan(ctx, from, to, y, edgeRow, rimLeft, rimRight) {
+  const w = to - from;
+  if (w <= 0) return;
+  if (edgeRow || w <= 2) {
+    rect(ctx, from, y, w, 1, RING_RIM);
+    return;
+  }
+  rect(ctx, from, y, w, 1, RING_GOLD);
+  if (rimLeft) rect(ctx, from, y, 1, 1, RING_RIM);
+  if (rimRight) rect(ctx, to - 1, y, 1, 1, RING_RIM);
 }
 
 export function drawCoins(ctx, v, coins, lostCoins) {
