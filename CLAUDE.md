@@ -99,7 +99,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 ```
 
 - `?debug` en la URL expone `window.__dd` con `state`, `player`, `coins`, `flagX`, `groundAt(x)` y `teleport(x)`. El usuario quiere mantener este hook.
-- **Suite E2E en el repo** (`tests/e2e/`, Playwright con `playwright-core`, servidor estático propio): `cd tests/e2e && npm install && npm test` (o `npm test -- <suite>`). Suites: `pwa`, `playthrough`, `mobile`, `share`, `lives`, `roll`, `letters`, `pause`, `feel`, `victory-song`. Todo cambio debe dejarla en verde, y cada funcionalidad nueva añade o amplía una suite (ver `tests/e2e/README.md`). Las suites usan el hook `?debug` (`window.__dd`).
+- **Suite E2E en el repo** (`tests/e2e/`, Playwright con `playwright-core`, servidor estático propio): `cd tests/e2e && npm install && npm test` (o `npm test -- <suite>`). Suites: `pwa`, `playthrough`, `mobile`, `share`, `lives`, `roll`, `letters`, `pause`, `feel`, `victory-song`, `timer`. Todo cambio debe dejarla en verde, y cada funcionalidad nueva añade o amplía una suite (ver `tests/e2e/README.md`). Las suites usan el hook `?debug` (`window.__dd`).
 - Si añades un módulo a `src/`, añádelo también al `PRECACHE` de `sw.js` y sube `CACHE_VERSION`: la suite `pwa` falla si falta.
 - Tras cada cambio, da al usuario una checklist de verificación manual adaptada a lo modificado (ver `docs/development.md`).
 

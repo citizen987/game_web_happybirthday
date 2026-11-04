@@ -1,4 +1,5 @@
-import { LETTERS } from '../config.js';
+import { LETTERS, SCORE } from '../config.js';
+import { formatTime } from '../utils/format.js';
 import { drawCoin } from './entities-view.js';
 import { drawGlyph, GLYPH_W } from './letter-glyphs.js';
 
@@ -7,7 +8,7 @@ const GLYPHS = {
   '0': '111101101101111', '1': '010110010010111', '2': '111001111100111',
   '3': '111001111001111', '4': '101101111001001', '5': '111100111001111',
   '6': '111100111101111', '7': '111001010010010', '8': '111101111101111',
-  '9': '111101111001111', 'x': '000101010101000',
+  '9': '111101111001111', 'x': '000101010101000', ':': '000010000010000',
 };
 
 export function drawPixelText(ctx, text, x, y, scale, color) {
@@ -23,9 +24,42 @@ export function drawPixelText(ctx, text, x, y, scale, color) {
   }
 }
 
-function drawCounter(ctx, text, x, y) {
+function drawCounter(ctx, text, x, y, color = '#ffffff') {
   drawPixelText(ctx, text, x + 1, y + 1, 2, '#1a1030');
-  drawPixelText(ctx, text, x, y, 2, '#ffffff');
+  drawPixelText(ctx, text, x, y, 2, color);
+}
+
+const TIMER_SCALE = 2;
+const TIMER_TEXT_W = 5 * 4 * TIMER_SCALE - TIMER_SCALE; // "MM:SS"
+const CLOCK_SIZE = 9;
+const TIMER_COLOR = '#ffffff';
+const TIMER_COLOR_NO_BONUS = '#9aa6c8'; // past SCORE.PAR_SECONDS the time bonus is already 0
+
+// 9x9 pixel clock icon with hands at "10 past".
+function drawClock(ctx, x, y, color) {
+  const rows = ['001111100', '010000010', '100010001', '100010001', '100011001', '100000001', '100000001', '010000010', '001111100'];
+  ctx.fillStyle = '#1a1030';
+  rows.forEach((row, ry) => { for (let rx = 0; rx < 9; rx++) if (row[rx] === '1') ctx.fillRect(x + rx + 1, y + ry + 1, 1, 1); });
+  ctx.fillStyle = color;
+  rows.forEach((row, ry) => { for (let rx = 0; rx < 9; rx++) if (row[rx] === '1') ctx.fillRect(x + rx, y + ry, 1, 1); });
+}
+
+/**
+ * Box of the timer in internal pixels: right-aligned, left of `insetRight` (the part
+ * of the canvas covered by the DOM pause/mute buttons on this screen).
+ */
+export function timerBox(viewW, insetRight) {
+  const right = viewW - 4 - Math.ceil(insetRight);
+  const w = CLOCK_SIZE + 3 + TIMER_TEXT_W;
+  return { x: right - w, y: 6, w, h: 11 };
+}
+
+// Top-right MM:SS play time (the same time that scores); dims once the time bonus is gone.
+function drawTimer(ctx, seconds, viewW, insetRight) {
+  const box = timerBox(viewW, insetRight);
+  const color = seconds >= SCORE.PAR_SECONDS ? TIMER_COLOR_NO_BONUS : TIMER_COLOR;
+  drawClock(ctx, box.x, box.y, color);
+  drawCounter(ctx, formatTime(seconds), box.x + CLOCK_SIZE + 3, 7, color);
 }
 
 const SLOT_STEP = GLYPH_W + 4;
@@ -42,9 +76,11 @@ function drawLetterSlots(ctx, letters, viewW, tick, superForm) {
   }
 }
 
-// Screen-space HUD: [David's face] x lives   [ring] x coins (top-left), D A V I D (top-center).
-export function drawHud(ctx, { lives, coinCount, icon, letters, viewW, tick, superForm }) {
+// Screen-space HUD: [David's face] x lives   [ring] x coins (top-left), D A V I D (top-center),
+// [clock] MM:SS (top-right).
+export function drawHud(ctx, { lives, coinCount, icon, letters, viewW, tick, superForm, seconds, insetRight = 0 }) {
   drawLetterSlots(ctx, letters, viewW, tick, superForm);
+  drawTimer(ctx, seconds, viewW, insetRight);
   if (icon) ctx.drawImage(icon, 4, 2);
   else {
     ctx.fillStyle = '#f3c39b';

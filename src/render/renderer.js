@@ -1,3 +1,4 @@
+import { TIMESTEP } from '../config.js';
 import { rand } from '../utils/math.js';
 import { drawClouds, drawHills, drawMountains, drawSky, drawWater } from './background.js';
 import { drawCheckpoints, drawCoins, drawEffects, drawEnemies, drawFlag, drawLetters } from './entities-view.js';
@@ -61,6 +62,8 @@ export class Renderer {
         viewW: width,
         tick: game.tick,
         superForm: world.super,
+        seconds: game.playFrames * TIMESTEP,
+        insetRight: this.display.hudInsetRight,
       });
     }
     if (world.flash > 0) {

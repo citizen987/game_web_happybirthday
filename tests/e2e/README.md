@@ -39,6 +39,7 @@ Todas cargan `index.html?debug`, manejan el juego a través de `window.__dd` y f
 | `pause` | El botón de pausa solo se ve en partida; P congela la simulación y Esc la reanuda; ocultar la pestaña pausa (y sigue en pausa al volver); "Continuar" reanuda; en el móvil, tocar pausa y continuar. |
 | `feel` | Polvo al aterrizar desde altura y al derrapar; temblor de cámara al soltar la carga. |
 | `victory-song` | Al ganar se programa "Cumpleaños feliz" (cuenta de osciladores creados) y "Volver a jugar" la corta sin errores. |
+| `timer` | El cronómetro está a 0 en el inicio, avanza en partida, se detiene en pausa, se congela en la meta e iguala el tiempo puntuado; el panel usa MM:SS; en 16:9, móvil y tablet queda dentro del lienzo y sin solaparse con ⏸/🔊. |
 
 ## Añadir una suite
 

@@ -146,7 +146,13 @@ Orden dentro de `Game.update`:
 | `core/best-score.js` | Récord personal en `localStorage` |
 | `render/share-card.js` | Tarjeta PNG para compartir (cielo, confeti, foto y puntuación) |
 | `ui/share.js` | Texto de la felicitación, Web Share API y portapapeles |
-| `utils/format.js` | `formatPoints` (4.250) y `formatTime` (1:14) |
+| `utils/format.js` | `formatPoints` (4.250) y `formatTime` (MM:SS, 01:14), usado en el HUD, el panel, el texto compartido y la tarjeta |
+
+## Cronómetro del HUD
+
+- Muestra `game.playFrames × TIMESTEP`, el **mismo tiempo que puntúa**: no avanza en la pantalla de inicio, en pausa ni durante la transformación, y se congela en la meta o al perder todas las vidas.
+- Va arriba a la derecha, pero los botones ⏸/🔊 son DOM fijo a la pantalla y pueden tapar esa esquina del lienzo según su proporción. `Display.measureHudInsetRight()` calcula cuántos píxeles internos invaden (0 si caen en la banda) y `hud.js` (`timerBox`) alinea el cronómetro a su izquierda. Se recalcula al redimensionar y al cambiar de estado (⏸ solo existe en `play`).
+- Pasados `SCORE.PAR_SECONDS` cambia a un color apagado, porque el bonus de tiempo ya es 0.
 
 ## Coordenadas
 

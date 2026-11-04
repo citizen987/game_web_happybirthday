@@ -7,6 +7,7 @@ import { Display } from './core/display.js';
 import { Input } from './core/input.js';
 import { Game } from './game/game.js';
 import { HeadSprite } from './render/head-sprite.js';
+import { timerBox } from './render/hud.js';
 import { Renderer } from './render/renderer.js';
 import {
   blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
@@ -35,6 +36,7 @@ const game = new Game({
   music,
   onStateChange: (state) => {
     screens.setState(state);
+    measureHudInset();
     if (state === 'play') input.layout();
   },
   onShowWin: (result) => shareFlow.showWin(result),
@@ -126,8 +128,14 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+// Pause/mute are fixed DOM buttons; the HUD timer moves left of whatever part they cover.
+function measureHudInset() {
+  display.measureHudInsetRight([document.getElementById('pause'), document.getElementById('mute')]);
+}
+
 function resize() {
   display.resize();
+  measureHudInset();
   input.layout();
 }
 window.addEventListener('resize', resize);
@@ -144,6 +152,9 @@ if (/[?&]debug\b/.test(location.search)) {
     get super() { return game.world.super; },
     get freeze() { return game.freeze; },
     get paused() { return game.paused; },
+    get time() { return game.playFrames * TIMESTEP; },
+    get hudInsetRight() { return display.hudInsetRight; },
+    timerBox: () => timerBox(display.width, display.hudInsetRight),
     get world() { return game.world; },
     get result() { return game.result; },
     get shareFile() { return shareFlow.file; },

@@ -35,6 +35,7 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 | `__dd.coins` | Monedas recogidas |
 | `__dd.lives` | Vidas restantes |
 | `__dd.paused` | Juego en pausa |
+| `__dd.time` / `__dd.timerBox()` | Tiempo de partida en segundos (el del cronómetro) / caja del cronómetro en píxeles internos |
 | `__dd.super` / `__dd.freeze` | Súper David activo / frames restantes de la secuencia de transformación |
 | `__dd.world` | Estado completo de la partida (para pruebas: `world.coinCount = 0`, `world.enemies`…) |
 | `__dd.result` | Resultado final (`null` hasta llegar a la meta) |
