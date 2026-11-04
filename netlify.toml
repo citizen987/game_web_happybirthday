@@ -1,0 +1,15 @@
+# Static site: no build step, publish the repository root as-is.
+[build]
+  publish = "."
+  command = ""
+
+# Fresh code after every deploy (no stale cached modules after an update).
+[[headers]]
+  for = "/src/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

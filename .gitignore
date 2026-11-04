@@ -1,0 +1,13 @@
+# Local tooling caches
+.atl/
+.codegraph/
+.netlify/
+
+# Node (only if dev tooling is added later)
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
