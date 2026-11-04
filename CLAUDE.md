@@ -22,9 +22,9 @@ Juego web de plataformas 2D, regalo de cumpleaños para David. Está publicado e
 
 ### Cuándo
 
-- Haz commit y push **solo cuando el usuario lo pida explícitamente**. La aprobación de un commit no vale para el siguiente.
-- Un push a `main` **publica directamente en producción** (Netlify), así que antes de cada push hay que verificar el cambio (ver "Cómo ejecutar y verificar").
-- Cada commit es una unidad coherente: el cambio de código junto con su documentación (`README.md`, `docs/`, `CLAUDE.md`) cuando le afecte.
+- **Commits:** hazlos cuando lo consideres, por unidades de trabajo coherentes y ya verificadas (el cambio de código junto con su documentación: `README.md`, `docs/`, `CLAUDE.md`). No hace falta pedir permiso para cada commit; lo obligatorio es el formato del mensaje y la identidad personal.
+- Si hay otros agentes editando en paralelo, añade solo las rutas de tu unidad (`git add <rutas>`), nunca `git add -A`.
+- **Push:** un push a `main` **publica directamente en producción** (Netlify). Hazlo al cerrar el trabajo, con todo verificado (ver "Cómo ejecutar y verificar"), y confirma con el usuario antes si no lo ha pedido.
 
 ### Identidad (obligatorio)
 
@@ -117,7 +117,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - **Pointer events sintéticos en `window`:** `e.target` no es un `Node`; `MuteButton.contains` ya lo contempla.
 - **Patrones de canvas:** se anclan al espacio del mundo gracias a `ctx.translate`, así que no hay que desplazarlos a mano.
 - **Lienzo fijo 16:9 (320×180).** Se escala manteniendo la proporción y el espacio sobrante muestra bandas decorativas (fondo de `html` en `css/styles.css`, con el horizonte al ~73 % para continuar el suelo del juego). Aun así, en el código usa `display.width`/`view.w` en lugar de 320 literal.
-- **Capas y la bola:** `render/player-view.js` repite `isBall` en lugar de importarla de `game/`, para no romper la regla de capas. Si cambias la condición, cámbiala en los dos sitios.
+- **Predicados compartidos:** lo que necesiten a la vez `game/` y `render/` (como `isBall`) va en `src/model/`, que no depende de nada.
 - **Compartir:** `navigator.share` exige un gesto del usuario y en iOS se invalida si hay un `await` previo. Por eso la tarjeta PNG se pregenera en `showResult` (`main.js`) y `shareCongrats` llama a `share` antes de cualquier `await`. No muevas la generación al clic.
 - **Web Share en Playwright:** headless no la tiene. Simúlala con `addInitScript` (`navigator.share`/`canShare`) para la ruta nativa, y bórrala (`delete Navigator.prototype.share`) para probar la alternativa del portapapeles.
 - **Netlify** inyecta un comentario y un script `/.netlify/scripts/hud` en el HTML servido. Es normal.
