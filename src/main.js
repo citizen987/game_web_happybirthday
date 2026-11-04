@@ -1,21 +1,19 @@
 // Composition root: creates every module, wires them together and runs the loop.
 import { createSfx } from './audio/sfx.js';
 import { MusicPlayer } from './audio/music.js';
-import { ASSETS, AUTHOR, HEAD_SPRITE, LIVES, SCORE, SUPER, TIMESTEP, WIN } from './config.js';
+import { ASSETS, AUTHOR, HEAD_SPRITE, SUPER, TIMESTEP } from './config.js';
 import { AudioEngine } from './core/audio.js';
-import { submitBestScore } from './core/best-score.js';
 import { Display } from './core/display.js';
 import { Input } from './core/input.js';
 import { Game } from './game/game.js';
 import { HeadSprite } from './render/head-sprite.js';
 import { Renderer } from './render/renderer.js';
-import { createShareCard } from './render/share-card.js';
 import {
   blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
 } from './ui/device.js';
 import { MuteButton } from './ui/mute-button.js';
 import { Screens } from './ui/screens.js';
-import { buildShareText, canShareNatively, shareCongrats } from './ui/share.js';
+import { ShareFlow } from './ui/share-flow.js';
 import { buildLevel } from './world/level.js';
 
 const display = new Display(document.getElementById('game'));
@@ -26,9 +24,9 @@ const muteButton = new MuteButton(document.getElementById('mute'), audio);
 const level = buildLevel();
 const head = new HeadSprite(ASSETS.HEAD, HEAD_SPRITE);
 
+const shareFlow = new ShareFlow({ screens, head });
+
 let input = null;
-let shareFile = null;
-let shareCardToken = 0;
 
 const game = new Game({
   level,
@@ -38,45 +36,10 @@ const game = new Game({
     screens.setState(state);
     if (state === 'play') input.layout();
   },
-  onShowWin: (result) => showResult(result),
-  onGameOver: () => showGameOver(),
+  onShowWin: (result) => shareFlow.showWin(result),
+  onGameOver: () => shareFlow.showGameOver(),
   onTransform: () => screens.showBanner(SUPER.BANNER),
 });
-
-// Score card + share image. The PNG is generated now (not on tap) because
-// navigator.share must be called synchronously inside the tap gesture on iOS.
-function showResult(result) {
-  const record = submitBestScore(SCORE.BEST_KEY, result.total);
-  screens.setShareLabel(canShareNatively());
-  screens.showWin(WIN.MESSAGE, result, record);
-  prepareShareCard(result);
-}
-
-// Out of lives: no score and no record, but David is still congratulated and it can be shared.
-function showGameOver() {
-  screens.setShareLabel(canShareNatively());
-  screens.showGameOver(WIN.MESSAGE, LIVES.GAMEOVER_SUBTITLE);
-  prepareShareCard(null);
-}
-
-function prepareShareCard(result) {
-  shareFile = null;
-  const token = ++shareCardToken;
-  createShareCard({ headImage: head.image, result })
-    .then((file) => {
-      if (token !== shareCardToken) return;
-      shareFile = file;
-      if (!canShareNatively()) screens.setCardDownload(file);
-    })
-    .catch((err) => console.warn('Share card could not be generated; sharing text only', err));
-}
-
-async function shareResult() {
-  if (!game.endShown) return;
-  const outcome = await shareCongrats({ text: buildShareText(game.result), file: shareFile });
-  if (outcome === 'copied') screens.showToast('¡Felicitación copiada! Pégala donde quieras 📋');
-  else if (outcome === 'unavailable') screens.showToast('Este navegador no permite compartir 😕');
-}
 
 function startGame() {
   if (game.state !== 'title') return;
@@ -88,8 +51,7 @@ function startGame() {
 
 function playAgain() {
   audio.unlock();
-  shareCardToken++;
-  shareFile = null;
+  shareFlow.reset();
   screens.hideWin();
   screens.hideBanner();
   input.reset();
@@ -130,7 +92,7 @@ const renderer = new Renderer(display, head);
 
 screens.onStart(startGame);
 screens.onPlayAgain(playAgain);
-screens.onShare(shareResult);
+screens.onShare(() => shareFlow.share());
 blockBrowserGestures();
 
 window.addEventListener('pointerdown', () => audio.resume());
@@ -158,7 +120,7 @@ if (/[?&]debug\b/.test(location.search)) {
     get freeze() { return game.freeze; },
     get world() { return game.world; },
     get result() { return game.result; },
-    get shareFile() { return shareFile; },
+    get shareFile() { return shareFlow.file; },
     flagX: level.flagX,
     groundAt: (x) => level.terrain.groundAt(x),
     teleport: (x) => game.teleport(x, display.width),

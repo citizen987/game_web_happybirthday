@@ -1,8 +1,6 @@
 import { ROLL } from '../config.js';
+import { isBall } from '../model/player-state.js';
 import { rect } from './draw.js';
-
-// Mirrors game/player.js isBall (render must not depend on the game layer).
-const isBall = (p) => p.rolling || p.charging || p.airBall;
 
 const COL = {
   shirt: '#e8282e', shirtD: '#a9141b', skin: '#f3c39b', skinD: '#d39a72',

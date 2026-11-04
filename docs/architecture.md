@@ -24,12 +24,13 @@
 |---|---|---|
 | `config.js` | Constantes de ajuste | — |
 | `utils/` | Funciones puras genéricas (`clamp`, PRNG, storage seguro) | — |
+| `model/` | Predicados puros sobre el estado compartidos por varias capas (`isBall`) | — |
 | `world/` | Terreno y definición del nivel | `config`, `utils` |
-| `game/` | Estado y reglas: física, enemigos, recogidas, cámara, máquina de estados | `config`, `utils`, `world` (vía datos) |
-| `render/` | Dibujar un frame a partir del estado | `config`, `utils` |
+| `game/` | Estado y reglas: física, enemigos, recogidas, cámara, máquina de estados | `config`, `utils`, `model`, `world` (vía datos) |
+| `render/` | Dibujar un frame a partir del estado | `config`, `utils`, `model` |
 | `audio/` | Efectos y música sobre `AudioEngine` | `core/audio` |
 | `core/` | Canvas y escalado, WebAudio, teclado y táctil | `config`, `utils` |
-| `ui/` | Overlays del DOM, botón de silencio, fullscreen y gestos del móvil | — |
+| `ui/` | Overlays del DOM, botón de silencio, fullscreen y gestos del móvil. `share-flow.js` orquesta el final (récord, tarjeta y compartir) | `config`, `core/best-score`, `render/share-card` |
 | `main.js` | Crea y conecta todo y ejecuta el bucle | todas |
 
 **Regla clave:** `game/` nunca importa de `core/`, `render/`, `audio/` ni `ui/`. Se comunica hacia fuera mediante:
@@ -84,13 +85,13 @@ cualquier salto ──▶ airBall ──aterrizar──▶ de pie (↓ mantenido
 - `clearBall()` se llama al recibir un golpe, al morir y al llegar a la meta (la celebración se hace con la cara de David).
 - La cámara sigue más rápido a altas velocidades (`CAMERA.LERP_X_FAST`) y limita la anticipación (`MAX_LOOK`).
 - Los eventos de sonido pueden llevar parámetro: `{ name: 'charge', arg: 0..1 }` (el tono sube con la carga).
-- `render/player-view.js` repite la condición de `isBall` para no depender de `game/`.
+- `isBall` vive en `model/player-state.js` y la importan tanto `game/player.js` como `render/player-view.js`.
 
 ## Letras D-A-V-I-D y Súper David
 
 - `world/level.js` define `letters` (5 posiciones) y `game/world.js` las copia con `taken`, más `super`, `transformPending` y `flash`.
 - `game/pickups.js`: al coger una letra emite `{ name: 'letter', arg: índice }` (la nota sube con cada letra) y, con las 5, marca `transformPending`.
-- `Game.startTransform()`: congela la acción durante `SUPER.SEQUENCE_FRAMES` (`game.freeze`; el cronómetro no avanza), con destello, fanfarria `transform` y `onTransform()` (rótulo DOM "¡SÚPER DAVID!"). Al terminar, `world.super = true` y la música arranca en variante `{ bpm: SUPER.MUSIC_BPM, transpose: SUPER.MUSIC_TRANSPOSE }`.
+- `game/super.js` contiene la secuencia (`beginTransform`, `stepTransform`) y la estela (`superTrail`); `Game.startTransform()` la orquesta con la música y el callback. Congela la acción durante `SUPER.SEQUENCE_FRAMES` (`game.freeze`; el cronómetro no avanza), con destello, fanfarria `transform` y `onTransform()` (rótulo DOM "¡SÚPER DAVID!"). Al terminar, `world.super = true` y la música arranca en variante `{ bpm: SUPER.MUSIC_BPM, transpose: SUPER.MUSIC_TRANSPOSE }`.
 - **Efectos de `super`:**
   - `player.js` aplica multiplicadores (`motionLimits`: velocidad ×1,5, aceleración ×2, salto ×1,12).
   - `enemies.js` destruye a cualquier enemigo al contacto y nunca hiere.

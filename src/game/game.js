@@ -1,14 +1,13 @@
 import { LIVES, PLAYER, SUPER, VIEW, WIN, WORLD } from '../config.js';
 import { rand } from '../utils/math.js';
 import { Camera } from './camera.js';
-import { spawnConfetti, spawnFirework, spawnParticles, updateEffects } from './effects.js';
+import { spawnConfetti, spawnFirework, updateEffects } from './effects.js';
 import { updateEnemies } from './enemies.js';
 import { updatePickups } from './pickups.js';
 import { clearBall, createPlayer, updatePlayer } from './player.js';
 import { computeScore } from './score.js';
+import { beginTransform, stepTransform, superTrail } from './super.js';
 import { createWorld, updatePlatforms } from './world.js';
-
-const SUPER_SPARKS = ['#fff6a0', '#ffd23a', '#ffffff'];
 
 /**
  * Game state machine: 'title' -> 'play' -> 'win' | 'gameover' (-> 'play' on restart).
@@ -40,6 +39,7 @@ export class Game {
     this.playFrames = 0;
     this.result = null;     // score; stays null on gameover
     this.freeze = 0;        // frames left in the Súper David transformation sequence
+    this.paused = false;
     this.camera.look = 0;
     this.camera.follow(this.world.player, viewW, this.level.terrain.end, true);
   }
@@ -109,7 +109,7 @@ export class Game {
   update(input, viewW) {
     this.tick++;
     const jumpPressed = input.consumeJump();
-    if (this.state === 'title') return;
+    if (this.state === 'title' || this.paused) return;
     if (this.freeze > 0) {
       this.updateTransform(viewW);
       return;
@@ -124,9 +124,7 @@ export class Game {
     updateEnemies(w, this.state === 'play' && !w.player.dying);
     if (updatePickups(w) && this.state === 'play') this.triggerWin();
     if (w.transformPending && this.state === 'play' && !w.player.dying) this.startTransform();
-    if (w.super && this.tick % 3 === 0 && Math.abs(w.player.vx) > 1) {
-      spawnParticles(w, w.player.x - Math.sign(w.player.vx) * 6, w.player.y - 14, 1, SUPER_SPARKS, 0.4, -0.01, 16);
-    }
+    superTrail(w, this.tick);
     updateEffects(w, this.camera.y, VIEW.HEIGHT);
     if (this.state === 'win') this.updateWin(viewW);
     else if (this.state === 'gameover') this.updateGameOver(viewW);
@@ -137,32 +135,29 @@ export class Game {
     this.flushEvents();
   }
 
-  // All five letters: freeze the action, flash and play the fanfare, then go golden.
+  // All five letters: freeze the action (see super.js), then switch to the super music.
   startTransform() {
-    const w = this.world;
-    w.transformPending = false;
-    this.freeze = SUPER.SEQUENCE_FRAMES;
-    w.flash = 24;
+    this.freeze = beginTransform(this.world);
     this.music.stop();
-    w.events.push('transform');
     this.onTransform();
   }
 
   updateTransform(viewW) {
     const w = this.world;
-    const p = w.player;
     this.freeze--;
-    if (this.freeze % 3 === 0) spawnParticles(w, p.x, p.y - 16, 4, SUPER_SPARKS, 2.2, 0, 22);
     updateEffects(w, this.camera.y, VIEW.HEIGHT);
-    if (w.flash > 0) w.flash--;
-    if (this.freeze === 0) {
-      w.super = true;
-      p.super = true;
-      w.flash = 12;
+    if (stepTransform(w, this.freeze)) {
       this.music.start({ bpm: SUPER.MUSIC_BPM, transpose: SUPER.MUSIC_TRANSPOSE });
     }
-    this.camera.follow(p, viewW, w.terrain.end);
+    this.camera.follow(w.player, viewW, w.terrain.end);
     this.flushEvents();
+  }
+
+  /** Pause only applies during normal play (not title, end screens or the transformation). */
+  setPaused(paused) {
+    if (paused && (this.state !== 'play' || this.freeze > 0)) return false;
+    this.paused = paused;
+    return true;
   }
 
   checkLifeLoss(viewW) {

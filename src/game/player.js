@@ -1,4 +1,5 @@
 import { LIVES, PHYSICS as P, PLAYER, ROLL, SUPER } from '../config.js';
+import { isBall } from '../model/player-state.js';
 import { approach, clamp } from '../utils/math.js';
 import { spawnParticles } from './effects.js';
 
@@ -35,7 +36,7 @@ export function createPlayer(terrain, x) {
   };
 }
 
-export const isBall = (p) => p.rolling || p.charging || p.airBall;
+export { isBall };
 
 // While curled into a ball the player destroys enemies on contact from any side.
 export const isAttacking = (p) => isBall(p) && !p.hurt && !p.dying;
