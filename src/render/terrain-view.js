@@ -4,7 +4,7 @@ import { rect } from './draw.js';
 // World-space drawing of ground, platforms and decoration (inside the camera transform).
 
 const NO_GROUND = -32768;
-const groundTops = new Int16Array(VIEW.MAX_WIDTH + 1);
+const groundTops = new Int16Array(VIEW.WIDTH + 1);
 
 // 16x16 checkered dirt tile; patterns are anchored to world space via the transform.
 export function createDirtPattern(ctx) {

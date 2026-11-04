@@ -1,23 +1,24 @@
 import { VIEW } from '../config.js';
 
-// Fixed-height low-res canvas whose width follows the screen aspect ratio,
-// scaled up with CSS (image-rendering: pixelated) to fill the screen.
+// Fixed 16:9 low-res canvas (320x180) scaled up with CSS (image-rendering: pixelated)
+// as large as the screen allows while keeping its aspect ratio. Leftover space shows
+// the body background as pillarbox/letterbox bands (see css/styles.css).
 export class Display {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.width = 320;
+    this.width = VIEW.WIDTH;
     this.height = VIEW.HEIGHT;
+    canvas.width = this.width;
+    canvas.height = this.height;
   }
 
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    this.width = Math.max(VIEW.MIN_WIDTH, Math.min(VIEW.MAX_WIDTH, Math.round(this.height * (w / h))));
+    // Setting the size resets the 2D context state, so smoothing must be disabled again.
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.ctx.imageSmoothingEnabled = false;
-    const scale = Math.min(w / this.width, h / this.height);
+    const scale = Math.min(window.innerWidth / this.width, window.innerHeight / this.height);
     this.canvas.style.width = `${Math.floor(this.width * scale)}px`;
     this.canvas.style.height = `${Math.floor(this.height * scale)}px`;
   }

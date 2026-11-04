@@ -4,8 +4,7 @@ export const TIMESTEP = 1 / 60;
 
 export const VIEW = {
   HEIGHT: 180,
-  MIN_WIDTH: 240,
-  MAX_WIDTH: 400,
+  WIDTH: 320, // fixed 16:9 (320x180); extra screen space becomes decorative bands
 };
 
 export const PHYSICS = {

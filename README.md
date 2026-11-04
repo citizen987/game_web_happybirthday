@@ -12,7 +12,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 
 ## Características
 
-- Pixel art a 180 px de alto, escalado sin suavizado para ocupar la pantalla manteniendo la proporción.
+- Pixel art a 320×180 (16:9 fijo, como en consola), escalado sin suavizado al mayor tamaño que quepa. En pantallas con otra proporción aparecen bandas decorativas.
 - Fondo con parallax: cielo por franjas, nubes, montañas, colinas y agua.
 - Física con aceleración, inercia, pendientes, *coyote time*, *jump buffer* y salto de altura variable.
 - **Bola rodante** (azul y roja): pulsando abajo en movimiento ruedas conservando la inercia (sin acelerar, frenando con la dirección contraria y ganando velocidad cuesta abajo) hasta perder casi toda la velocidad. **Carga en parado:** agachado, pulsa saltar varias veces y suelta abajo para salir disparado. **Todo salto es bola.** Como bola, destruyes enemigos al tocarlos por cualquier lado.

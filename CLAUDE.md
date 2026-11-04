@@ -116,7 +116,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - **`head.png` desde `file://`:** el canvas queda "tainted"; `getImageData` falla y se omite el contorno pixelado (aparece un aviso en la consola).
 - **Pointer events sintéticos en `window`:** `e.target` no es un `Node`; `MuteButton.contains` ya lo contempla.
 - **Patrones de canvas:** se anclan al espacio del mundo gracias a `ctx.translate`, así que no hay que desplazarlos a mano.
-- **El ancho interno es variable (240–400 px).** Nunca asumas 320: usa `display.width` o `view.w`.
+- **Lienzo fijo 16:9 (320×180).** Se escala manteniendo la proporción y el espacio sobrante muestra bandas decorativas (fondo de `html` en `css/styles.css`, con el horizonte al ~73 % para continuar el suelo del juego). Aun así, en el código usa `display.width`/`view.w` en lugar de 320 literal.
 - **Capas y la bola:** `render/player-view.js` repite `isBall` en lugar de importarla de `game/`, para no romper la regla de capas. Si cambias la condición, cámbiala en los dos sitios.
 - **Compartir:** `navigator.share` exige un gesto del usuario y en iOS se invalida si hay un `await` previo. Por eso la tarjeta PNG se pregenera en `showResult` (`main.js`) y `shareCongrats` llama a `share` antes de cualquier `await`. No muevas la generación al clic.
 - **Web Share en Playwright:** headless no la tiene. Simúlala con `addInitScript` (`navigator.share`/`canShare`) para la ruta nativa, y bórrala (`delete Navigator.prototype.share`) para probar la alternativa del portapapeles.

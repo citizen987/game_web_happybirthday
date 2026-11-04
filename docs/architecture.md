@@ -148,6 +148,6 @@ Orden dentro de `Game.update`:
 
 ## Coordenadas
 
-- Resolución interna: 180 px de alto. El ancho se adapta entre 240 y 400 px según el aspecto de la pantalla.
+- Resolución interna fija **320×180 (16:9)**, igual en todos los dispositivos, para que todos vean el mismo encuadre. Se escala con CSS al mayor tamaño que quepa; en pantallas más alargadas (móviles ~20:9) o más cuadradas (tablets 4:3) quedan bandas decorativas que imitan el cielo y el suelo.
 - Mundo: `x` crece hacia la derecha e `y` hacia abajo. El suelo base está en `y = 150` y el agua en `y = 182`. Por debajo de `DEATH_Y = 250` se reaparece en el último checkpoint.
 - Las capas de fondo se dibujan en coordenadas de pantalla con parallax. El resto, dentro de `ctx.translate(-camX, -camY)`.
