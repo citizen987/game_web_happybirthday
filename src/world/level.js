@@ -137,12 +137,13 @@ export function buildLevel() {
   crab(M.u + 100, M.u + 380);
   bee(M.u + 260, M.u + 420, 110);
 
-  // --- Letters D-A-V-I-D (slightly off the main path, always reachable with a normal jump) ---
+  // --- Letters D-A-V-I-D, in word order along the level (pushed left to right; index = letter).
+  //     Slightly off the main path, always reachable with a normal jump ---
   const letter = (x, y) => level.letters.push({ x: Math.round(x), y: Math.round(y) });
   letter(M.g1 + 36, 86);          // D: above the coin arc over the first gap
   letter(M.i + 242, 36);          // A: over the top stair platform
-  letter(M.p + 140, 28);          // V: over the high platform
-  letter(M.g3 + 50, 80);          // I: above the moving-platform gap
+  letter(M.g3 + 50, 80);          // V: above the moving-platform gap
+  letter(M.p + 140, 28);          // I: over the high platform
   letter(M.g6 + 60, 92);          // D: between the last gap's platforms
 
   // --- Checkpoints ---

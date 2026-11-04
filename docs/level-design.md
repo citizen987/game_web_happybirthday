@@ -59,11 +59,11 @@ Cinco letras doradas, ligeramente fuera del camino principal pero alcanzables co
 |---|---|
 | D | Sobre el arco de aros del primer hueco (`M.g1 + 36`, y 86) |
 | A | Encima de la plataforma más alta de la escalera (`M.i + 242`, y 36) |
-| V | Sobre la plataforma alta (`M.p + 140`, y 28) |
-| I | Sobre el hueco de la plataforma móvil (`M.g3 + 50`, y 80) |
+| V | Sobre el hueco de la plataforma móvil (`M.g3 + 50`, y 80) |
+| I | Sobre la plataforma alta (`M.p + 140`, y 28) |
 | D | Entre las plataformas del último gran hueco (`M.g6 + 60`, y 92) |
 
-Regla: la parte baja de la letra debe estar a **≤ 82 px** por encima del suelo o de la plataforma desde la que se salta (pico del salto ~60 px + cuerpo). Las letras sobre huecos se cogen en pleno salto. Al moverlas, mantén el orden D-A-V-I-D a lo largo del nivel para que la transformación llegue en el último tramo.
+Regla: la parte baja de la letra debe estar a **≤ 82 px** por encima del suelo o de la plataforma desde la que se salta (pico del salto ~60 px + cuerpo). Las letras sobre huecos se cogen en pleno salto. **Deben aparecer en orden D-A-V-I-D de izquierda a derecha:** el índice de cada letra es su posición en `level.letters`, así que al moverlas mantén las `x` crecientes.
 
 ## 5. Meta y duración
 
