@@ -4,7 +4,7 @@ import { Camera } from './camera.js';
 import { spawnConfetti, spawnFirework, updateEffects } from './effects.js';
 import { updateEnemies } from './enemies.js';
 import { updatePickups } from './pickups.js';
-import { createPlayer, updatePlayer } from './player.js';
+import { clearBall, createPlayer, updatePlayer } from './player.js';
 import { computeScore } from './score.js';
 import { createWorld, updatePlatforms } from './world.js';
 
@@ -78,6 +78,7 @@ export class Game {
   }
 
   triggerWin() {
+    clearBall(this.world.player); // celebrate with David's face, not as a ball
     this.result = computeScore({
       coins: this.world.coinCount,
       frames: this.playFrames,
@@ -160,10 +161,12 @@ export class Game {
   }
 
   flushEvents() {
+    // Events are names, or { name, arg } when the sound needs a parameter.
     const events = this.world.events;
-    for (const name of events) {
+    for (const event of events) {
+      const name = typeof event === 'string' ? event : event.name;
       const play = this.sfx[name];
-      if (play) play();
+      if (play) play(event.arg);
       else console.warn(`No sound registered for game event "${name}"`);
     }
     events.length = 0;

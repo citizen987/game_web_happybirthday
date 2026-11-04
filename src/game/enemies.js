@@ -1,7 +1,7 @@
 import { PHYSICS, PLAYER } from '../config.js';
 import { spawnParticles } from './effects.js';
 import { spillCoins } from './pickups.js';
-import { killPlayer, playerTop } from './player.js';
+import { clearBall, isAttacking, killPlayer, playerTop } from './player.js';
 
 const HW = PLAYER.HALF_W;
 
@@ -42,6 +42,7 @@ function hurtPlayer(world, srcX) {
   }
   spillCoins(world, Math.min(world.coinCount, PLAYER.MAX_SPILL));
   world.coinCount = 0;
+  clearBall(p);
   p.hurt = true;
   p.onGround = false;
   p.onPlat = null;
@@ -53,7 +54,17 @@ function hurtPlayer(world, srcX) {
   world.events.push('hit');
 }
 
-/** Patrol enemies and resolve player contact (stomp from above, hurt otherwise). */
+function destroyEnemy(world, e, top, bottom) {
+  e.alive = false;
+  spawnParticles(world, e.x, (top + bottom) / 2, 12, ['#ffffff', '#dfe6ff', '#ffd23a'], 1.8, 0.02, 20);
+  world.events.push('stomp');
+}
+
+/**
+ * Patrol enemies and resolve player contact: as a ball (rolling/charging/jumping)
+ * any contact destroys the enemy; otherwise only a stomp from above does, and a
+ * side touch hurts.
+ */
 export function updateEnemies(world, canInteract) {
   const p = world.player;
   const pTop = playerTop(p);
@@ -66,13 +77,15 @@ export function updateEnemies(world, canInteract) {
     const overlap = p.x + HW > e.x - half && p.x - HW < e.x + half && p.y > top && pTop < bottom;
     if (!overlap) continue;
 
-    if (p.vyPre > 0.3 && p.prevY <= top + 6) {
-      e.alive = false;
-      spawnParticles(world, e.x, (top + bottom) / 2, 12, ['#ffffff', '#dfe6ff', '#ffd23a'], 1.8, 0.02, 20);
+    const fromAbove = !p.onGround && p.vyPre > 0.3 && p.prevY <= top + 6;
+    if (fromAbove) {
+      destroyEnemy(world, e, top, bottom);
       p.vy = PHYSICS.STOMP_BOUNCE;
       p.onGround = false;
       p.onPlat = null;
-      world.events.push('stomp');
+    } else if (isAttacking(p)) {
+      // Rolling through keeps all momentum.
+      destroyEnemy(world, e, top, bottom);
     } else {
       hurtPlayer(world, e.x);
     }

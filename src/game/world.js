@@ -3,7 +3,7 @@ import { createPlayer } from './player.js';
 
 /**
  * Mutable runtime state for one playthrough, created from static level data.
- * `events` is a queue of sound/feedback event names drained by Game each step.
+ * `events` is a queue of sound events (names or { name, arg }) drained by Game each step.
  */
 export function createWorld(level) {
   const terrain = level.terrain;

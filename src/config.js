@@ -28,6 +28,25 @@ export const PHYSICS = {
   STOMP_BOUNCE: -4.6,
 };
 
+// Rolling ball, charge dash and ball jumps. Ratios follow the classic 16-bit
+// rolling physics, rescaled ×0.6 to this game's slower speeds.
+export const ROLL = {
+  START_MIN: 0.6,          // min |vx| to curl into a roll when pressing down
+  EXIT: 0.3,               // stand up below this |vx|
+  FRIC: 0.035,             // half of walking friction: rolling keeps inertia
+  DECEL: 0.075,            // braking when pressing against the roll
+  SLOPE_DOWN: 2.5,         // × SLOPE_G when rolling downhill
+  SLOPE_UP: 0.6,           // × SLOPE_G when rolling uphill
+  MAX_V: 7.5,
+  CHARGE_ADD: 2,           // per jump press while crouched
+  CHARGE_MAX: 8,
+  CHARGE_DECAY: 1 / 32,    // fraction of the charge lost per frame
+  RELEASE_BASE: 4.8,       // release speed = BASE + floor(charge) * PER_CHARGE (4.8..7.2)
+  RELEASE_PER_CHARGE: 0.3,
+  H_BALL: 15,
+  RADIUS: 7,
+};
+
 export const PLAYER = {
   HALF_W: 5,
   H_STAND: 26,
@@ -51,6 +70,8 @@ export const CAMERA = {
   LEAD: 0.42,
   LOOKAHEAD: 14,
   LERP_X: 0.12,
+  LERP_X_FAST: 0.25,       // horizontal follow at top rolling speed
+  MAX_LOOK: 70,
   LERP_Y: 0.08,
 };
 

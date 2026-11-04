@@ -15,6 +15,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 - Pixel art a 180 px de alto, escalado sin suavizado para ocupar la pantalla manteniendo la proporción.
 - Fondo con parallax: cielo por franjas, nubes, montañas, colinas y agua.
 - Física con aceleración, inercia, pendientes, *coyote time*, *jump buffer* y salto de altura variable.
+- **Bola rodante** (azul y roja): pulsando abajo en movimiento ruedas conservando la inercia (sin acelerar, frenando con la dirección contraria y ganando velocidad cuesta abajo) hasta perder casi toda la velocidad. **Carga en parado:** agachado, pulsa saltar varias veces y suelta abajo para salir disparado. **Todo salto es bola.** Como bola, destruyes enemigos al tocarlos por cualquier lado.
 - Plataformas fijas y móviles, huecos, rampas y checkpoints.
 - Enemigos: si los pisas, desaparecen; si te tocan de lado, pierdes las monedas (puedes recuperarlas) y parpadeas durante 2 s.
 - **Vidas:** empiezas con 3. Pierdes una al caer al vacío o al recibir un golpe sin monedas, y reapareces en el último checkpoint. Con 0 vidas la partida termina sin puntuación, pero con la felicitación (y también se puede compartir). Marcador arriba a la izquierda con la cara de David.
@@ -28,7 +29,9 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 | Acción | Teclado | Móvil |
 |---|---|---|
 | Moverse | ← → / A D | ◀ ▶ (abajo a la izquierda) |
-| Agacharse | ↓ / S | ▼ |
+| Agacharse (parado) | ↓ / S | ▼ |
+| Rodar (en movimiento) | ↓ / S | ▼ |
+| Carga en parado | Mantén ↓ + pulsa saltar varias veces, suelta ↓ | Mantén ▼ + toca saltar varias veces, suelta ▼ |
 | Saltar | Espacio / Z / ↑ / W | Botón grande (abajo a la derecha) |
 | Silenciar | M | Botón 🔊 (arriba a la derecha) |
 | Volver a jugar | Enter / Espacio | Botón "Volver a jugar" |

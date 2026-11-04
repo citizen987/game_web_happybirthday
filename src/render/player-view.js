@@ -1,4 +1,8 @@
+import { ROLL } from '../config.js';
 import { rect } from './draw.js';
+
+// Mirrors game/player.js isBall (render must not depend on the game layer).
+const isBall = (p) => p.rolling || p.charging || p.airBall;
 
 const COL = {
   shirt: '#e8282e', shirtD: '#a9141b', skin: '#f3c39b', skinD: '#d39a72',
@@ -43,11 +47,51 @@ function computePose(p) {
   return pose;
 }
 
+const BALL = {
+  segments: ['#2d6ae8', '#e8282e', '#2d6ae8', '#e8282e'],
+  shade: ['#1f3c80', '#a9141b', '#1f3c80', '#a9141b'],
+  outline: '#1a1030',
+  shine: '#ffffff',
+};
+
 /**
- * Small pixel-art body with the big photo head on top. Local coords: x=0 is the
+ * Original blue/red ball: four rotating segments (quarters), shaded on the
+ * lower-right, dark outline and a fixed highlight. Drawn pixel by pixel.
+ */
+function drawBall(ctx, p) {
+  const r = ROLL.RADIUS;
+  const cx = Math.round(p.x);
+  const cy = Math.round(p.y) - r - 1;
+  const quarter = Math.PI / 2;
+  for (let dy = -r; dy <= r; dy++) {
+    for (let dx = -r; dx <= r; dx++) {
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d > r + 0.5) continue;
+      let color;
+      if (d > r - 0.5) {
+        color = BALL.outline;
+      } else {
+        const a = Math.atan2(dy, dx) + p.spin;
+        const seg = ((Math.floor(a / quarter) % 4) + 4) % 4;
+        color = dx + dy > r * 0.6 ? BALL.shade[seg] : BALL.segments[seg];
+      }
+      rect(ctx, cx + dx, cy + dy, 1, 1, color);
+    }
+  }
+  rect(ctx, cx - 3, cy - 4, 2, 1, BALL.shine);
+  rect(ctx, cx - 4, cy - 3, 1, 2, BALL.shine);
+}
+
+/**
+ * Small pixel-art body with the big photo head on top (or a ball while rolling,
+ * charging or jumping). Local coords: x=0 is the
  * body center, y=0 the feet; `face` mirrors the drawing horizontally.
  */
 export function drawPlayer(ctx, p, head) {
+  if (isBall(p)) {
+    drawBall(ctx, p);
+    return;
+  }
   const ox = Math.round(p.x);
   const oy = Math.round(p.y);
   const f = p.face;

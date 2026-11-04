@@ -68,6 +68,24 @@ botón Compartir ─▶ shareCongrats()        (ui/share.js)
 - El tiempo sale de `playFrames`, que solo cuenta en el estado `play` y en pasos fijos, así que es independiente de la tasa de refresco y de las pausas.
 - Cancelar el menú de compartir (`AbortError`) no se trata como error.
 
+## Bola: rodar, cargar y saltar
+
+Estados del jugador en `game/player.js` (constantes en `ROLL`, `config.js`):
+
+```
+de pie ──↓ con |vx| ≥ START_MIN──▶ rolling ──|vx| < EXIT──▶ de pie / agachado
+agachado ──saltar──▶ charging ──saltar: +CHARGE_ADD (máx. CHARGE_MAX), pierde 1/32 por frame
+                      └──soltar ↓──▶ rolling a RELEASE_BASE + floor(charge) × RELEASE_PER_CHARGE
+cualquier salto ──▶ airBall ──aterrizar──▶ de pie (↓ mantenido vuelve a rodar)
+```
+
+- `rolling`: sin aceleración. Rozamiento a la mitad, frenada contra la dirección y pendientes ×2,5 cuesta abajo y ×0,6 cuesta arriba. Velocidad máxima `ROLL.MAX_V`.
+- `isBall(p)` = `rolling || charging || airBall`. Hitbox baja (`ROLL.H_BALL`) y, mientras se es bola, **`isAttacking(p)`**: cualquier contacto destruye al enemigo (rebote solo si caes desde arriba; rodando no se pierde velocidad).
+- `clearBall()` se llama al recibir un golpe, al morir y al llegar a la meta (la celebración se hace con la cara de David).
+- La cámara sigue más rápido a altas velocidades (`CAMERA.LERP_X_FAST`) y limita la anticipación (`MAX_LOOK`).
+- Los eventos de sonido pueden llevar parámetro: `{ name: 'charge', arg: 0..1 }` (el tono sube con la carga).
+- `render/player-view.js` repite la condición de `isBall` para no depender de `game/`.
+
 ## Vidas
 
 - `world.lives` empieza en `LIVES.START` (3).

@@ -38,6 +38,7 @@ Valores derivados de `PHYSICS` en `config.js`:
 | Altura máxima de salto | ~60 px (manteniendo pulsado) |
 | Salto mínimo (toque corto) | ~15 px |
 | Distancia máxima a velocidad punta (3,6 px/frame) | ~170 px a la misma altura |
+| Distancia saltando tras una carga (hasta 7,2 px/frame) | ~340 px; diseña los huecos para la velocidad normal, no para la carga |
 | Escalón que se sube andando | 10 px (`STEP_UP`); más alto actúa como muro |
 | Pendiente cómoda | hasta ~0,4 (40 px de subida por cada 100 px) |
 

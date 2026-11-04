@@ -1,7 +1,9 @@
-import { LIVES, PHYSICS as P, PLAYER } from '../config.js';
+import { LIVES, PHYSICS as P, PLAYER, ROLL } from '../config.js';
 import { approach, clamp } from '../utils/math.js';
+import { spawnParticles } from './effects.js';
 
 const HW = PLAYER.HALF_W;
+const DUST = ['#e8e0d0', '#c8bca8', '#ffffff'];
 
 export function createPlayer(terrain, x) {
   return {
@@ -14,6 +16,12 @@ export function createPlayer(terrain, x) {
     onPlat: null,
     slope: 0,
     crouch: false,
+    rolling: false,   // ball on the ground
+    charging: false,  // ball spinning in place, building a charge dash
+    charge: 0,
+    airBall: false,   // ball in the air (every jump)
+    spin: 0,          // ball rotation, for rendering
+    dustT: 0,
     coyote: 0,
     jumpBuf: 0,
     hurt: false,
@@ -26,11 +34,27 @@ export function createPlayer(terrain, x) {
   };
 }
 
-export const playerTop = (p) => p.y - (p.crouch ? PLAYER.H_CROUCH : PLAYER.H_STAND);
+export const isBall = (p) => p.rolling || p.charging || p.airBall;
+
+// While curled into a ball the player destroys enemies on contact from any side.
+export const isAttacking = (p) => isBall(p) && !p.hurt && !p.dying;
+
+export function playerTop(p) {
+  if (isBall(p)) return p.y - ROLL.H_BALL;
+  return p.y - (p.crouch ? PLAYER.H_CROUCH : PLAYER.H_STAND);
+}
+
+export function clearBall(p) {
+  p.rolling = false;
+  p.charging = false;
+  p.charge = 0;
+  p.airBall = false;
+}
 
 // Lose-a-life animation: hop up, then fall through everything off screen.
 export function killPlayer(world) {
   const p = world.player;
+  clearBall(p);
   p.dying = true;
   p.dieT = 0;
   p.hurt = false;
@@ -65,15 +89,18 @@ export function updatePlayer(world, input, jumpPressed, mode) {
   const J = ctrl && input.jump;
   const ix = (R ? 1 : 0) - (L ? 1 : 0);
 
-  if (ctrl && jumpPressed) p.jumpBuf = P.JUMP_BUFFER_FRAMES;
+  // A jump press while crouched/charging builds the charge dash instead of jumping.
+  const jumpUsed = updateGroundBall(world, p, D, ctrl && jumpPressed);
+  if (ctrl && jumpPressed && !jumpUsed) p.jumpBuf = P.JUMP_BUFFER_FRAMES;
   else if (p.jumpBuf > 0) p.jumpBuf--;
   p.coyote = p.onGround ? P.COYOTE_FRAMES : Math.max(0, p.coyote - 1);
-  p.crouch = p.onGround && D;
+  p.crouch = p.onGround && D && !p.rolling && !p.charging;
 
   applyHorizontalForces(p, ix);
   if (mode === 'win') p.vx *= 0.9;
-  p.vx = clamp(p.vx, -P.MAX_V, P.MAX_V);
-  if (ix !== 0) p.face = ix;
+  const maxV = isBall(p) ? ROLL.MAX_V : P.MAX_V;
+  p.vx = clamp(p.vx, -maxV, maxV);
+  if (ix !== 0 && !p.rolling) p.face = ix;
 
   if (p.jumpBuf > 0 && p.coyote > 0) {
     p.vy = P.JUMP_V;
@@ -82,6 +109,9 @@ export function updatePlayer(world, input, jumpPressed, mode) {
     p.coyote = 0;
     p.jumpBuf = 0;
     p.crouch = false;
+    p.rolling = false;
+    p.charging = false;
+    p.airBall = true;
     world.events.push('jump');
   }
 
@@ -90,18 +120,82 @@ export function updatePlayer(world, input, jumpPressed, mode) {
   applyGravityAndLand(p, terrain, world.platforms, ctrl && !J);
 
   if (p.onGround && Math.abs(p.vx) > 0.1) p.runT += 0.12 + Math.abs(p.vx) * 0.09;
+  if (p.charging) p.spin += 0.9 * p.face;
+  else if (p.rolling) p.spin += p.vx * 0.22;
+  else if (p.airBall) p.spin += 0.35 * (p.vx < 0 ? -1 : 1);
   if (p.inv > 0) p.inv--;
+}
+
+/**
+ * Ground ball state machine: crouch -> charge -> release, and roll <-> stand.
+ * Returns true when the jump press was consumed by the charge.
+ */
+function updateGroundBall(world, p, down, jumpPressed) {
+  if (!p.onGround) return false;
+  const speed = Math.abs(p.vx);
+
+  if (p.charging) {
+    if (down) {
+      if (jumpPressed) addCharge(world, p);
+      p.charge -= p.charge * ROLL.CHARGE_DECAY;
+      if (++p.dustT % 4 === 0) {
+        spawnParticles(world, p.x - p.face * 6, p.y - 2, 2, DUST, 0.8, -0.02, 12);
+      }
+      return jumpPressed;
+    }
+    // Down released: launch as a rolling ball in the facing direction.
+    p.charging = false;
+    p.rolling = true;
+    p.vx = p.face * (ROLL.RELEASE_BASE + Math.floor(p.charge) * ROLL.RELEASE_PER_CHARGE);
+    p.charge = 0;
+    spawnParticles(world, p.x - p.face * 8, p.y - 4, 10, DUST, 1.6, 0, 16);
+    world.events.push('release');
+    return false;
+  }
+
+  if (p.rolling) {
+    if (speed < ROLL.EXIT) p.rolling = false;
+    return false;
+  }
+
+  if (down && speed >= ROLL.START_MIN) {
+    p.rolling = true;
+    world.events.push('roll');
+    return false;
+  }
+  if (down && jumpPressed) {
+    p.charging = true;
+    p.charge = 0;
+    addCharge(world, p);
+    return true;
+  }
+  return false;
+}
+
+function addCharge(world, p) {
+  p.charge = Math.min(ROLL.CHARGE_MAX, p.charge + ROLL.CHARGE_ADD);
+  world.events.push({ name: 'charge', arg: p.charge / ROLL.CHARGE_MAX });
 }
 
 function applyHorizontalForces(p, ix) {
   if (p.onGround) {
-    p.vx += p.slope * P.SLOPE_G;
-    if (p.crouch) p.vx = approach(p.vx, 0, P.CROUCH_FRIC);
-    else if (ix !== 0) {
-      if (ix * p.vx < 0) p.vx += ix * P.DECEL;
-      else if (Math.abs(p.vx) < P.TOP) p.vx = ix * Math.min(Math.abs(p.vx) + P.ACC, P.TOP);
-      else p.vx = approach(p.vx, ix * P.TOP, 0.02);
-    } else p.vx = approach(p.vx, 0, P.FRIC);
+    if (p.charging) {
+      p.vx = approach(p.vx, 0, P.CROUCH_FRIC * 2);
+    } else if (p.rolling) {
+      // No acceleration while rolling: only slopes, friction and braking.
+      const downhill = Math.sign(p.slope) === Math.sign(p.vx);
+      p.vx += p.slope * P.SLOPE_G * (downhill ? ROLL.SLOPE_DOWN : ROLL.SLOPE_UP);
+      if (ix !== 0 && ix * p.vx < 0) p.vx = approach(p.vx, 0, ROLL.DECEL);
+      p.vx = approach(p.vx, 0, ROLL.FRIC);
+    } else {
+      p.vx += p.slope * P.SLOPE_G;
+      if (p.crouch) p.vx = approach(p.vx, 0, P.CROUCH_FRIC);
+      else if (ix !== 0) {
+        if (ix * p.vx < 0) p.vx += ix * P.DECEL;
+        else if (Math.abs(p.vx) < P.TOP) p.vx = ix * Math.min(Math.abs(p.vx) + P.ACC, P.TOP);
+        else p.vx = approach(p.vx, ix * P.TOP, 0.02);
+      } else p.vx = approach(p.vx, 0, P.FRIC);
+    }
   } else if (ix !== 0 && ix * p.vx < P.TOP) {
     p.vx = ix * Math.min(ix * p.vx + P.AIR_ACC, P.TOP);
   }
@@ -177,6 +271,8 @@ function applyGravityAndLand(p, terrain, platforms, cutJump) {
     p.onGround = true;
     p.onPlat = landPlat;
     p.slope = landPlat ? 0 : terrain.slopeAt(p.x);
+    // Jump ball uncurls on landing (holding down re-curls it into a roll next step).
+    p.airBall = false;
     if (p.hurt) {
       p.hurt = false;
       p.vx *= 0.3;
