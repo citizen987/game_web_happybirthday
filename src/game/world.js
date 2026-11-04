@@ -1,4 +1,4 @@
-import { WORLD } from '../config.js';
+import { LIVES, WORLD } from '../config.js';
 import { createPlayer } from './player.js';
 
 /**
@@ -23,6 +23,7 @@ export function createWorld(level) {
     checkpoints: level.checkpoints.map((x) => ({ x, y: terrain.groundAt(x), on: false })),
     lastCheckpoint: { x: WORLD.START_X },
     coinCount: 0,
+    lives: LIVES.START,
     lostCoins: [],
     particles: [],
     confetti: [],

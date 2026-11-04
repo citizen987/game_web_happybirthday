@@ -3,9 +3,10 @@ import { formatPoints, formatTime } from '../utils/format.js';
 const COUNT_UP_DELAY_MS = 1100;
 const COUNT_UP_MS = 900;
 const TOAST_MS = 2600;
+const NBSP = String.fromCharCode(160);
 
-// DOM overlays: title screen, victory screen with score card, toast, and the
-// body[data-state] flag that CSS uses to show/hide touch controls per game state.
+// DOM overlays: title screen, end screen (win with score card / gameover without it),
+// toast, and the body[data-state] flag that CSS uses to show/hide touch controls.
 export class Screens {
   constructor(doc = document) {
     this.body = doc.body;
@@ -19,6 +20,7 @@ export class Screens {
     this.timeEl = doc.getElementById('score-time');
     this.totalEl = doc.getElementById('score-total');
     this.bestEl = doc.getElementById('score-best');
+    this.subtitleEl = doc.getElementById('end-subtitle');
     this.toastEl = doc.getElementById('toast');
     this.countToken = 0;
     this.toastTimer = null;
@@ -52,19 +54,19 @@ export class Screens {
    * @param {{best:number,isNewBest:boolean}} record
    */
   showWin(message, result, record) {
-    this.messageEl.textContent = '';
-    Array.from(message).forEach((ch, i) => {
-      const span = document.createElement('span');
-      span.textContent = ch === ' ' ? ' ' : ch;
-      span.style.animationDelay = `${i * 0.06}s, ${i * 0.1}s`;
-      this.messageEl.appendChild(span);
-    });
-
+    this.prepareEnd('win', message, 'Volver a jugar');
     this.timeEl.textContent = formatTime(result.seconds);
     this.bestEl.textContent = record.isNewBest ? '🏆 ¡Nuevo récord!' : `Récord: ${formatPoints(record.best)}`;
     this.bestEl.classList.toggle('is-new', record.isNewBest);
-    this.setCardDownload(null);
     this.countUp(result);
+    this.winEl.classList.remove('hidden');
+  }
+
+  // Out of lives: same celebration overlay for David, without the score.
+  showGameOver(message, subtitle) {
+    this.prepareEnd('gameover', message, 'Intentar de nuevo');
+    this.subtitleEl.textContent = subtitle;
+    this.countToken++;
     this.winEl.classList.remove('hidden');
   }
 
@@ -96,6 +98,21 @@ export class Screens {
     this.toastEl.classList.remove('hidden');
     clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => this.toastEl.classList.add('hidden'), TOAST_MS);
+  }
+
+  // Shared setup of the end overlay; `mode` drives which parts CSS shows.
+  prepareEnd(mode, message, againLabel) {
+    this.winEl.dataset.mode = mode;
+    this.againEl.textContent = againLabel;
+    this.setCardDownload(null);
+    // Each letter is its own span so CSS can animate a wave with staggered delays.
+    this.messageEl.textContent = '';
+    Array.from(message).forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.textContent = ch === ' ' ? NBSP : ch;
+      span.style.animationDelay = `${i * 0.06}s, ${i * 0.1}s`;
+      this.messageEl.appendChild(span);
+    });
   }
 
   // Coins and points tick up once the score card has popped in.

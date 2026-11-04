@@ -7,6 +7,7 @@ export class HeadSprite {
     this.innerH = Math.round(config.INNER_W * config.SRC.h / config.SRC.w);
     this.right = null;
     this.left = null;
+    this.icon = null;  // small HUD lives icon
     this.image = null; // original photo, reused for the share card
     const img = new Image();
     img.onload = () => {
@@ -22,14 +23,29 @@ export class HeadSprite {
   }
 
   bake(img) {
-    const { SRC, INNER_W } = this.config;
+    const { SRC, ICON_SRC, INNER_W, HUD_ICON_W } = this.config;
+    const out = this.bakeAt(img, SRC, INNER_W);
+    const flipped = document.createElement('canvas');
+    flipped.width = out.width;
+    flipped.height = out.height;
+    const fc = flipped.getContext('2d');
+    fc.scale(-1, 1);
+    fc.drawImage(out, -out.width, 0);
+    this.right = out;
+    this.left = flipped;
+    this.icon = this.bakeAt(img, ICON_SRC, HUD_ICON_W);
+  }
+
+  // Downscale the SRC region of the photo to innerW pixels wide (+1px outline on each side).
+  bakeAt(img, SRC, innerW) {
+    const innerH = Math.round(innerW * SRC.h / SRC.w);
     let cur = document.createElement('canvas');
     cur.width = SRC.w;
     cur.height = SRC.h;
     cur.getContext('2d').drawImage(img, SRC.x, SRC.y, SRC.w, SRC.h, 0, 0, SRC.w, SRC.h);
     let cw = cur.width;
     let ch = cur.height;
-    while (cw / 2 > INNER_W) {
+    while (cw / 2 > innerW) {
       const nw = Math.round(cw / 2);
       const nh = Math.round(ch / 2);
       const next = document.createElement('canvas');
@@ -44,22 +60,14 @@ export class HeadSprite {
       ch = nh;
     }
     const out = document.createElement('canvas');
-    out.width = this.width;
-    out.height = this.innerH + 2;
+    out.width = innerW + 2;
+    out.height = innerH + 2;
     const oc = out.getContext('2d');
     oc.imageSmoothingEnabled = true;
     oc.imageSmoothingQuality = 'high';
-    oc.drawImage(cur, 1, 1, INNER_W, this.innerH);
+    oc.drawImage(cur, 1, 1, innerW, innerH);
     outlineAndHardenAlpha(oc, out.width, out.height);
-
-    const flipped = document.createElement('canvas');
-    flipped.width = out.width;
-    flipped.height = out.height;
-    const fc = flipped.getContext('2d');
-    fc.scale(-1, 1);
-    fc.drawImage(out, -out.width, 0);
-    this.right = out;
-    this.left = flipped;
+    return out;
   }
 }
 

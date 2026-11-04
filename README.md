@@ -6,7 +6,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 
 ## Propósito
 
-- Un regalo personal, corto (60–90 s) y fácil de terminar: no hay game over.
+- Un regalo personal, corto (60–90 s) y asequible. Aunque pierdas todas las vidas, la felicitación a David aparece igual.
 - Funciona en el móvil (Chrome Android y Safari iOS) y en escritorio, sin instalar nada.
 - Todo el arte está dibujado por código, salvo la foto de la cara de David (`assets/head.png`).
 
@@ -17,6 +17,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 - Física con aceleración, inercia, pendientes, *coyote time*, *jump buffer* y salto de altura variable.
 - Plataformas fijas y móviles, huecos, rampas y checkpoints.
 - Enemigos: si los pisas, desaparecen; si te tocan de lado, pierdes las monedas (puedes recuperarlas) y parpadeas durante 2 s.
+- **Vidas:** empiezas con 3. Pierdes una al caer al vacío o al recibir un golpe sin monedas, y reapareces en el último checkpoint. Con 0 vidas la partida termina sin puntuación, pero con la felicitación (y también se puede compartir). Marcador arriba a la izquierda con la cara de David.
 - Música chiptune original y efectos de sonido generados con WebAudio, con botón de silencio.
 - Controles táctiles multitáctiles y aviso para girar el móvil cuando está en vertical.
 - **Puntuación final** según las monedas y el tiempo, con récord personal guardado en el navegador.

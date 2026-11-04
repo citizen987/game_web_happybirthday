@@ -1,7 +1,7 @@
 import { PHYSICS, PLAYER } from '../config.js';
 import { spawnParticles } from './effects.js';
 import { spillCoins } from './pickups.js';
-import { playerTop } from './player.js';
+import { killPlayer, playerTop } from './player.js';
 
 const HW = PLAYER.HALF_W;
 
@@ -31,10 +31,15 @@ function moveEnemy(e, terrain) {
   }
 }
 
-// Side hit: lose coins (they scatter), knockback and 2 s of blinking invulnerability.
+// Side hit: with coins, lose them (they scatter) plus knockback and 2 s of blinking
+// invulnerability; with no coins, lose a life.
 function hurtPlayer(world, srcX) {
   const p = world.player;
-  if (p.inv > 0) return;
+  if (p.inv > 0 || p.dying) return;
+  if (world.coinCount === 0) {
+    killPlayer(world);
+    return;
+  }
   spillCoins(world, Math.min(world.coinCount, PLAYER.MAX_SPILL));
   world.coinCount = 0;
   p.hurt = true;

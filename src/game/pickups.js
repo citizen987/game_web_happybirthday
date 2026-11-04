@@ -6,7 +6,8 @@ const HW = PLAYER.HALF_W;
 const LOST_COIN_LIFE = 200;
 const LOST_COIN_GRACE = 25;
 
-const touchesPlayer = (p, x, y) => Math.abs(p.x - x) < HW + 4 && y > playerTop(p) - 4 && y < p.y + 4;
+const touchesPlayer = (p, x, y) =>
+  !p.dying && Math.abs(p.x - x) < HW + 4 && y > playerTop(p) - 4 && y < p.y + 4;
 
 function collectCoin(world, x, y) {
   world.coinCount++;
@@ -58,7 +59,7 @@ export function updatePickups(world) {
   }
 
   for (const cp of world.checkpoints) {
-    if (!cp.on && p.x >= cp.x) {
+    if (!cp.on && !p.dying && p.x >= cp.x) {
       cp.on = true;
       world.lastCheckpoint = cp;
       spawnParticles(world, cp.x, cp.y - 24, 14, ['#ffd23a', '#ff5a5a', '#ffffff'], 1.6, 0.03, 26);
@@ -66,5 +67,5 @@ export function updatePickups(world) {
     }
   }
 
-  return p.x >= world.level.flagX - 6;
+  return !p.dying && p.x >= world.level.flagX - 6;
 }

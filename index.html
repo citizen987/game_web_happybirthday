@@ -28,7 +28,7 @@
   <p class="help">Flechas / WASD para moverte &middot; Abajo para agacharte &middot; Espacio o Z para saltar &middot; M silencia</p>
 </div>
 
-<div id="win" class="overlay hidden">
+<div id="win" class="overlay hidden" data-mode="win">
   <img src="assets/head.png" alt="David" class="big-face">
   <div id="congrats"></div>
   <div id="score-card" class="score-card">
@@ -38,6 +38,7 @@
       <div class="stat stat-total"><span class="stat-label">Puntos</span><span class="stat-value" id="score-total">0</span></div>
     </div>
     <p id="score-best" class="score-best"></p>
+    <p id="end-subtitle" class="end-subtitle"></p>
     <div class="actions">
       <button id="share" type="button" class="btn btn-primary">🎁 Compartir felicitación</button>
       <button id="again" type="button" class="btn">Volver a jugar</button>

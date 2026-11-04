@@ -4,7 +4,12 @@ import { formatPoints, formatTime } from '../utils/format.js';
 export const canShareNatively = () => typeof navigator.share === 'function';
 
 // The congratulation comes first; the score is the excuse to share it.
+// Without a result (out of lives) the message is a pure congratulation.
 export function buildShareText(result) {
+  if (!result) {
+    return `🎂 ¡Feliz cumpleaños, David! Te he felicitado jugando a David Dash, `
+      + `el juego de tu cumpleaños. ¿Llegarás tú a la meta? 👉 ${SHARE.URL}`;
+  }
   return `🎂 ¡Feliz cumpleaños, David! Te he felicitado corriendo en David Dash: `
     + `${formatPoints(result.total)} puntos (${result.coins} monedas en ${formatTime(result.seconds)}). `
     + `¿Quién se anima a superarlo? 👉 ${SHARE.URL}`;

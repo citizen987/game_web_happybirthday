@@ -21,10 +21,20 @@ export function drawPixelText(ctx, text, x, y, scale, color) {
   }
 }
 
-// Screen-space coin counter (top-left).
-export function drawHud(ctx, coinCount) {
-  drawCoin(ctx, 12, 12, 1);
-  const text = `x${coinCount}`;
-  drawPixelText(ctx, text, 21, 8, 2, '#1a1030');
-  drawPixelText(ctx, text, 20, 7, 2, '#ffffff');
+function drawCounter(ctx, text, x, y) {
+  drawPixelText(ctx, text, x + 1, y + 1, 2, '#1a1030');
+  drawPixelText(ctx, text, x, y, 2, '#ffffff');
+}
+
+// Screen-space HUD, top-left: [David's face] x lives   [ring] x coins.
+export function drawHud(ctx, { lives, coinCount, icon }) {
+  if (icon) ctx.drawImage(icon, 4, 2);
+  else {
+    ctx.fillStyle = '#f3c39b';
+    ctx.fillRect(4, 5, 12, 12);
+  }
+  drawCounter(ctx, `x${lives}`, 21, 7);
+  const coinX = 21 + 4 * 2 * (1 + String(lives).length) + 10;
+  drawCoin(ctx, coinX, 12, 1);
+  drawCounter(ctx, `x${coinCount}`, coinX + 8, 7);
 }

@@ -1,4 +1,4 @@
-import { PHYSICS as P, PLAYER } from '../config.js';
+import { LIVES, PHYSICS as P, PLAYER } from '../config.js';
 import { approach, clamp } from '../utils/math.js';
 
 const HW = PLAYER.HALF_W;
@@ -21,10 +21,27 @@ export function createPlayer(terrain, x) {
     runT: 0,
     prevY: 0,
     vyPre: 0,
+    dying: false,
+    dieT: 0,
   };
 }
 
 export const playerTop = (p) => p.y - (p.crouch ? PLAYER.H_CROUCH : PLAYER.H_STAND);
+
+// Lose-a-life animation: hop up, then fall through everything off screen.
+export function killPlayer(world) {
+  const p = world.player;
+  p.dying = true;
+  p.dieT = 0;
+  p.hurt = false;
+  p.onGround = false;
+  p.onPlat = null;
+  p.crouch = false;
+  p.vx = 0;
+  p.vy = LIVES.DEATH_JUMP_V;
+  world.shake = 8;
+  world.events.push('die');
+}
 
 /**
  * One physics step. `mode` is the game state: input only applies in 'play';
@@ -33,6 +50,14 @@ export const playerTop = (p) => p.y - (p.crouch ? PLAYER.H_CROUCH : PLAYER.H_STA
 export function updatePlayer(world, input, jumpPressed, mode) {
   const p = world.player;
   const terrain = world.terrain;
+  if (p.dying) {
+    p.dieT++;
+    p.prevY = p.y;
+    p.vy = Math.min(p.vy + P.GRAV, P.MAX_FALL);
+    p.vyPre = p.vy;
+    p.y += p.vy;
+    return;
+  }
   const ctrl = mode === 'play' && !p.hurt;
   const L = ctrl && input.left;
   const R = ctrl && input.right;

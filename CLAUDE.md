@@ -7,7 +7,7 @@ Juego web de plataformas 2D, regalo de cumpleaños para David. Está publicado e
 - **Cero dependencias en tiempo de ejecución y cero build.** Solo HTML, CSS y JavaScript con módulos ES nativos. No añadas frameworks, bundlers ni librerías CDN. Si alguna vez hace falta tooling de desarrollo (por ejemplo, tests), va en `devDependencies` y nunca se carga desde el juego.
 - **Gráficos dibujados por código.** La única imagen es `assets/head.png`. El pixel art usa `rect()` (`src/render/draw.js`) en coordenadas enteras.
 - **Personaje y nivel originales.** El juego se inspira en el género, pero no reproduce personajes, sprites, música ni niveles de juegos existentes.
-- **Debe seguir siendo fácil:** sin game over. Consulta los límites de huecos y saltos en `docs/level-design.md`.
+- **Debe seguir siendo asequible:** hay 3 vidas, pero el fin de partida también felicita a David (sin puntuación). Un bot que corre sin esquivar termina el nivel; si un cambio lo impide, es demasiado difícil. Consulta los límites en `docs/level-design.md`.
 - **Móvil primero:** cualquier cambio de UI debe funcionar en Chrome Android y Safari iOS (táctil, horizontal, audio tras un gesto).
 
 ## Idiomas
@@ -102,6 +102,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - No hay suite de tests en el repo. Para verificar un cambio con navegador headless, usa Playwright **fuera del repo** (en el scratchpad) contra el servidor local:
   - **Partida completa:** bot que mantiene → y salta cuando hay un hueco entre 10 y 26 px por delante. Antes del refactor modular terminaba en ~45 s.
   - **Reinicio:** tras la victoria, Enter → `state === 'play'`, 0 monedas y x = 60.
+  - **Vidas** (`?debug`): golpe con monedas → mismas vidas y monedas esparcidas; golpe sin monedas (`world.coinCount = 0` + `teleport` sobre un cangrejo) → `player.dying` y, a los ~75 frames, una vida menos y reaparición en el checkpoint; caída (`player.y = 300`, `onGround = false`) → una vida menos y se conservan las monedas; a 0 vidas → `state === 'gameover'`, overlay en `data-mode="gameover"`, sin `dd-best` y compartir sin "puntos"; "Intentar de nuevo" → 3 vidas.
   - **Compartir:** `?debug` → `teleport(flagX - 150)` y mantener → hasta `state === 'win'`. Comprobar `__dd.result`, el panel, `__dd.shareFile` (PNG) y el `navigator.share` simulado (texto con los puntos y la URL, y un archivo adjunto).
   - **Móvil:** viewport de 844×390 con `hasTouch`, un `pointerdown` sobre `[data-btn=right]` mueve al jugador. En 390×844 aparece el aviso de girar.
   - Sin errores en la consola (`pageerror`).

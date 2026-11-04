@@ -54,6 +54,14 @@ export const CAMERA = {
   LERP_Y: 0.08,
 };
 
+export const LIVES = {
+  START: 3,
+  DEATH_JUMP_V: -5,
+  DEATH_FRAMES: 75,
+  GAMEOVER_OVERLAY_AT: 70,
+  GAMEOVER_SUBTITLE: 'Te has quedado sin vidas… ¡pero la felicitación llega igual! 🎂',
+};
+
 export const WIN = {
   SHOW_OVERLAY_AT: 80,
   FIREWORK_EVERY: 28,
@@ -85,6 +93,9 @@ export const ASSETS = {
 export const HEAD_SPRITE = {
   SRC: { x: 0, y: 18, w: 256, h: 220 },
   INNER_W: 28,
+  // HUD lives icon: cropped to the face only so it reads at ~13 px.
+  ICON_SRC: { x: 116, y: 44, w: 140, h: 164 },
+  HUD_ICON_W: 13,
   FACE_X: 22,
   CHIN_Y: 21,
 };

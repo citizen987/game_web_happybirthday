@@ -26,6 +26,21 @@ export function createSfx(audio) {
 
     fall: play((t) => audio.tone(t, 900, 110, 0.55, 'square', 0.14)),
 
+    die: play((t) => {
+      audio.tone(t, 520, 780, 0.12, 'square', 0.16);
+      audio.tone(t + 0.14, 700, 90, 0.6, 'square', 0.15);
+    }),
+
+    // Light-hearted, not sad: the congratulation still comes after it.
+    gameover: play((t) => {
+      const tune = [[79, 0.15], [76, 0.15], [72, 0.15], [74, 0.15], [76, 0.15], [72, 0.5]];
+      let at = t;
+      for (const [note, dur] of tune) {
+        audio.tone(at, midiToFreq(note), null, dur * 0.9, 'triangle', 0.25);
+        at += dur;
+      }
+    }),
+
     checkpoint: play((t) => {
       [660, 880, 1320].forEach((f, i) => audio.tone(t + i * 0.08, f, null, 0.16, 'triangle', 0.25));
     }),

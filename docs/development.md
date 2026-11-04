@@ -30,9 +30,11 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 
 | Propiedad | Uso |
 |---|---|
-| `__dd.state` | Estado actual: `title`, `play` o `win` |
+| `__dd.state` | Estado actual: `title`, `play`, `win` o `gameover` |
 | `__dd.player` | Objeto del jugador (posición, velocidad, flags) |
 | `__dd.coins` | Monedas recogidas |
+| `__dd.lives` | Vidas restantes |
+| `__dd.world` | Estado completo de la partida (para pruebas: `world.coinCount = 0`, `world.enemies`…) |
 | `__dd.result` | Resultado final (`null` hasta llegar a la meta) |
 | `__dd.shareFile` | `File` PNG de la tarjeta, cuando ya está generado |
 | `__dd.flagX` | Posición x de la meta |
@@ -53,7 +55,8 @@ Sin `?debug` no se expone nada.
 | Añadir un tipo de enemigo | `game/enemies.js` (movimiento y hitbox) + `render/entities-view.js` (dibujo) + `world/level.js` (colocación) |
 | Añadir un sonido | Emitir `world.events.push('nombre')` en `game/` + función `nombre` en `audio/sfx.js` |
 | Cambiar la música | `audio/music.js` → `MAIN_THEME` (notas MIDI, 0 = silencio) |
-| Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` |
+| Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` (y `LIVES.GAMEOVER_SUBTITLE` para el fin de partida) |
+| Cambiar las vidas iniciales o la animación de muerte | `src/config.js` → `LIVES` |
 | Cambiar la fórmula de puntuación | `src/config.js` → `SCORE` (y `game/score.js` si cambia la forma) |
 | Cambiar el texto que se comparte | `ui/share.js` → `buildShareText` |
 | Cambiar la URL, el título o el nombre del archivo compartido | `src/config.js` → `SHARE` |
@@ -76,7 +79,7 @@ No hay CI. Cada push a `main` se publica directamente, así que verifica en loca
 1. Consola del navegador sin errores al cargar, jugar y terminar.
 2. Una partida completa hasta la bandera: celebración y "Volver a jugar".
 3. Caer a un hueco devuelve al último checkpoint.
-4. Pisar un enemigo lo elimina; tocarlo de lado hace perder monedas y parpadear.
+4. Pisar un enemigo lo elimina; tocarlo de lado con monedas las hace perder y parpadear; sin monedas, quita una vida. Perder las 3 vidas muestra la felicitación sin puntuación y "Intentar de nuevo" vuelve a dar 3 vidas.
 5. Sonido y botón de silencio (también con la tecla M).
 6. Emulación móvil en DevTools (en horizontal): los botones táctiles funcionan. En vertical aparece el aviso de girar.
 7. Al terminar: aparece el panel con las monedas, el tiempo y los puntos, y "Compartir felicitación" abre el menú nativo en el móvil. En escritorio sin Web Share, copia el texto y aparece "Descargar tarjeta". Para borrar el récord: `localStorage.removeItem('dd-best')`.

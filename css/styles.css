@@ -118,6 +118,13 @@ body.touch .help { display: none; }
   font-family: system-ui, sans-serif; font-weight: 800; font-size: .85em; opacity: .75;
 }
 .score-best.is-new { opacity: 1; color: #c08a10; }
+.end-subtitle {
+  margin: .1em 0 .6em; max-width: 26em;
+  font-family: system-ui, sans-serif; font-weight: 800; font-size: 1.05em; line-height: 1.3;
+}
+#win[data-mode="gameover"] .stats,
+#win[data-mode="gameover"] .score-best,
+#win[data-mode="win"] .end-subtitle { display: none; }
 .actions { display: flex; gap: .6em; justify-content: center; flex-wrap: wrap; }
 .btn {
   font: inherit; font-weight: 900; font-size: 1em;
@@ -173,7 +180,7 @@ body.touch .help { display: none; }
 /* Touch controls */
 #touch { position: fixed; inset: 0; z-index: 10; pointer-events: none; display: none; }
 #touch.show { display: block; }
-body[data-state="title"] #touch, body[data-state="win"] #touch { display: none; }
+body[data-state="title"] #touch, body[data-state="win"] #touch, body[data-state="gameover"] #touch { display: none; }
 .tbtn {
   position: absolute;
   width: var(--b); height: var(--b);

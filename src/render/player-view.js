@@ -12,7 +12,7 @@ function computePose(p) {
     hipY: -8, bob: 0, crouch: false, armsUp: false,
     backFoot: [-2, 0], frontFoot: [2, 0], backArm: 0, frontArm: 0,
   };
-  if (p.hurt) {
+  if (p.hurt || p.dying) {
     pose.backFoot = [-4, -1];
     pose.frontFoot = [4, -2];
     pose.armsUp = true;

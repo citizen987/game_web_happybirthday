@@ -41,11 +41,14 @@
 ## Máquina de estados
 
 ```
-title ──start()──▶ play ──bandera──▶ win ──restart()──▶ play
+title ──start()──▶ play ──bandera──────▶ win ──────┐
+                    │                                ├─restart()──▶ play
+                    └──0 vidas──▶ gameover ──────────┘
 ```
 
 - `title`: escena estática detrás del overlay de inicio. La simulación no avanza.
 - `play`: input activo y controles táctiles visibles (`body[data-state="play"]`).
+- `gameover`: sin vidas. No hay puntuación (`game.result = null`) ni récord. Hay confeti, y en `LIVES.GAMEOVER_OVERLAY_AT` se llama a `onGameOver()`: el mismo overlay en modo `data-mode="gameover"` (felicitación, subtítulo, compartir e "Intentar de nuevo").
 - `win`: control bloqueado, saltos de alegría, fuegos artificiales y confeti. Al entrar se calcula `game.result` (`game/score.js`). En `WIN.SHOW_OVERLAY_AT` se llama a `onShowWin(result)` y aparece el overlay con el panel de puntuación.
 
 ## Puntuación y compartir
@@ -65,6 +68,13 @@ botón Compartir ─▶ shareCongrats()        (ui/share.js)
 - El tiempo sale de `playFrames`, que solo cuenta en el estado `play` y en pasos fijos, así que es independiente de la tasa de refresco y de las pausas.
 - Cancelar el menú de compartir (`AbortError`) no se trata como error.
 
+## Vidas
+
+- `world.lives` empieza en `LIVES.START` (3).
+- **Golpe lateral:** con monedas, se pierden (y se esparcen); sin monedas, `killPlayer()` activa `player.dying` (salto, caída sin colisiones y evento `'die'`).
+- `Game.checkLifeLoss()` (solo en `play`): al terminar la animación de muerte (`LIVES.DEATH_FRAMES`) o al caer por debajo de `DEATH_Y`, llama a `loseLife()`. Es el **único punto** donde se resta una vida: si quedan, `respawn()` en el último checkpoint; si no, `triggerGameOver()`.
+- Mientras `dying`, el jugador no recoge monedas, no activa checkpoints ni la meta, y no interactúa con enemigos.
+
 ## Bucle principal
 
 `main.js` usa un **paso fijo de 60 Hz** con acumulador, de modo que la física es idéntica en pantallas de 60, 90 o 120 Hz. Se renderiza una vez por `requestAnimationFrame`. Mientras el móvil está en vertical (`portraitQuery`), la simulación se pausa.
@@ -72,7 +82,7 @@ botón Compartir ─▶ shareCongrats()        (ui/share.js)
 Orden dentro de `Game.update`:
 
 1. Plataformas móviles.
-2. Jugador (input, física y aterrizajes) y comprobación de caída al vacío.
+2. Jugador (input, física y aterrizajes, o animación de muerte) y comprobación de pérdida de vida.
 3. Enemigos (patrulla y colisión: pisotón o golpe).
 4. Recogidas: monedas, monedas perdidas, checkpoints y meta.
 5. Partículas y confeti.

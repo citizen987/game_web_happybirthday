@@ -85,6 +85,7 @@ function drawHead(ctx, img, size, u) {
   ctx.restore();
 }
 
+// result === null (out of lives): the box carries a plain birthday wish instead of points.
 function drawScoreBox(ctx, result, size, u) {
   const w = 760 * u;
   const h = 190 * u;
@@ -97,10 +98,12 @@ function drawScoreBox(ctx, result, size, u) {
   roundRect(ctx, x, y, w, h, 34 * u);
   ctx.fill();
 
-  drawFittedText(ctx, `${formatPoints(result.total)} PUNTOS`, size / 2, y + 95 * u, 86 * u, w * 0.9, {
+  const headline = result ? `${formatPoints(result.total)} PUNTOS` : '¡FELIZ CUMPLEAÑOS!';
+  const detail = result ? `${result.coins} monedas · ${formatTime(result.seconds)}` : '¿Llegarás tú a la meta?';
+  drawFittedText(ctx, headline, size / 2, y + 95 * u, 86 * u, w * 0.9, {
     font: TITLE_FONT, fill: '#e8282e',
   });
-  drawFittedText(ctx, `${result.coins} monedas · ${formatTime(result.seconds)}`, size / 2, y + 158 * u, 42 * u, w * 0.9, {
+  drawFittedText(ctx, detail, size / 2, y + 158 * u, 42 * u, w * 0.9, {
     font: BODY_FONT, weight: 700, fill: '#1d2b8f',
   });
 }

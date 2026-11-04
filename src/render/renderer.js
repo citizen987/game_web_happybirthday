@@ -44,12 +44,12 @@ export class Renderer {
     drawCoins(ctx, view, world.coins, world.lostCoins);
     drawEnemies(ctx, view, world.enemies);
     const p = world.player;
-    const blinking = p.inv > 0 && game.state === 'play' && (p.inv >> 2) % 2 === 0;
+    const blinking = !p.dying && p.inv > 0 && game.state === 'play' && (p.inv >> 2) % 2 === 0;
     if (!blinking) drawPlayer(ctx, p, this.head);
     drawEffects(ctx, world.particles, world.confetti);
     ctx.restore();
 
-    if (game.state !== 'title') drawHud(ctx, world.coinCount);
+    if (game.state !== 'title') drawHud(ctx, { lives: world.lives, coinCount: world.coinCount, icon: this.head.icon });
     if (world.fade > 0) {
       ctx.fillStyle = `rgba(255,255,255,${world.fade / 24})`;
       ctx.fillRect(0, 0, width, height);

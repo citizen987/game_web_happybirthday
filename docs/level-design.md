@@ -45,7 +45,7 @@ Valores derivados de `PHYSICS` en `config.js`:
 
 - **Huecos ≤ 110 px** sin ayuda. Más anchos solo con plataformas intermedias. Un hueco de 130 px resultó demasiado exigente en las pruebas.
 - **Plataformas separadas ≤ 30 px en vertical** cuando forman una escalera.
-- **Un checkpoint antes de cada zona difícil.** Caer devuelve al último activado.
+- **Un checkpoint antes de cada zona difícil.** Caer cuesta una vida y devuelve al último checkpoint activado. Con solo 3 vidas, los checkpoints frecuentes son lo que mantiene el juego asequible.
 - **Los cangrejos patrullan en suelo continuo:** su rango `min..max` no debe cruzar un hueco.
 - **Las abejas a `y0` ≈ suelo − 38** se pueden pasar por debajo. Más bajas obligan a saltar o agacharse.
 - **No pongas un borde de suelo más alto que STEP_UP justo tras un hueco,** a menos que quieras un muro.

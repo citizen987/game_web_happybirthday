@@ -1,7 +1,7 @@
 // Composition root: creates every module, wires them together and runs the loop.
 import { createSfx } from './audio/sfx.js';
 import { MusicPlayer } from './audio/music.js';
-import { ASSETS, HEAD_SPRITE, SCORE, TIMESTEP, WIN } from './config.js';
+import { ASSETS, HEAD_SPRITE, LIVES, SCORE, TIMESTEP, WIN } from './config.js';
 import { AudioEngine } from './core/audio.js';
 import { submitBestScore } from './core/best-score.js';
 import { Display } from './core/display.js';
@@ -39,6 +39,7 @@ const game = new Game({
     if (state === 'play') input.layout();
   },
   onShowWin: (result) => showResult(result),
+  onGameOver: () => showGameOver(),
 });
 
 // Score card + share image. The PNG is generated now (not on tap) because
@@ -47,6 +48,17 @@ function showResult(result) {
   const record = submitBestScore(SCORE.BEST_KEY, result.total);
   screens.setShareLabel(canShareNatively());
   screens.showWin(WIN.MESSAGE, result, record);
+  prepareShareCard(result);
+}
+
+// Out of lives: no score and no record, but David is still congratulated and it can be shared.
+function showGameOver() {
+  screens.setShareLabel(canShareNatively());
+  screens.showGameOver(WIN.MESSAGE, LIVES.GAMEOVER_SUBTITLE);
+  prepareShareCard(null);
+}
+
+function prepareShareCard(result) {
   shareFile = null;
   const token = ++shareCardToken;
   createShareCard({ headImage: head.image, result })
@@ -59,7 +71,7 @@ function showResult(result) {
 }
 
 async function shareResult() {
-  if (!game.result) return;
+  if (!game.endShown) return;
   const outcome = await shareCongrats({ text: buildShareText(game.result), file: shareFile });
   if (outcome === 'copied') screens.showToast('¡Felicitación copiada! Pégala donde quieras 📋');
   else if (outcome === 'unavailable') screens.showToast('Este navegador no permite compartir 😕');
@@ -93,9 +105,10 @@ function handleKey(e, action) {
     if (action) e.preventDefault();
     return true;
   }
+  const ended = game.state === 'win' || game.state === 'gameover';
   // Let a focused button/link (share, play again, download) handle its own Enter/Space.
-  if (game.state === 'win' && e.target instanceof Element && e.target.closest('button, a')) return true;
-  if (game.state === 'win' && game.winShown && (e.code === 'Enter' || action === 'jump') && !e.repeat) {
+  if (ended && e.target instanceof Element && e.target.closest('button, a')) return true;
+  if (ended && game.endShown && (e.code === 'Enter' || action === 'jump') && !e.repeat) {
     e.preventDefault();
     playAgain();
     return true;
@@ -138,6 +151,8 @@ if (/[?&]debug\b/.test(location.search)) {
     get state() { return game.state; },
     get player() { return game.world.player; },
     get coins() { return game.world.coinCount; },
+    get lives() { return game.world.lives; },
+    get world() { return game.world; },
     get result() { return game.result; },
     get shareFile() { return shareFile; },
     flagX: level.flagX,
