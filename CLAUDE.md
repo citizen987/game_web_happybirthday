@@ -102,6 +102,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - No hay suite de tests en el repo. Para verificar un cambio con navegador headless, usa Playwright **fuera del repo** (en el scratchpad) contra el servidor local:
   - **Partida completa:** bot que mantiene → y salta cuando hay un hueco entre 10 y 26 px por delante. Antes del refactor modular terminaba en ~45 s.
   - **Reinicio:** tras la victoria, Enter → `state === 'play'`, 0 monedas y x = 60.
+  - **Compartir:** `?debug` → `teleport(flagX - 150)` y mantener → hasta `state === 'win'`. Comprobar `__dd.result`, el panel, `__dd.shareFile` (PNG) y el `navigator.share` simulado (texto con los puntos y la URL, y un archivo adjunto).
   - **Móvil:** viewport de 844×390 con `hasTouch`, un `pointerdown` sobre `[data-btn=right]` mueve al jugador. En 390×844 aparece el aviso de girar.
   - Sin errores en la consola (`pageerror`).
 - Tras cada cambio, da al usuario una checklist de verificación manual adaptada a lo modificado (ver `docs/development.md`).
@@ -113,4 +114,6 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - **Pointer events sintéticos en `window`:** `e.target` no es un `Node`; `MuteButton.contains` ya lo contempla.
 - **Patrones de canvas:** se anclan al espacio del mundo gracias a `ctx.translate`, así que no hay que desplazarlos a mano.
 - **El ancho interno es variable (240–400 px).** Nunca asumas 320: usa `display.width` o `view.w`.
+- **Compartir:** `navigator.share` exige un gesto del usuario y en iOS se invalida si hay un `await` previo. Por eso la tarjeta PNG se pregenera en `showResult` (`main.js`) y `shareCongrats` llama a `share` antes de cualquier `await`. No muevas la generación al clic.
+- **Web Share en Playwright:** headless no la tiene. Simúlala con `addInitScript` (`navigator.share`/`canShare`) para la ruta nativa, y bórrala (`delete Navigator.prototype.share`) para probar la alternativa del portapapeles.
 - **Netlify** inyecta un comentario y un script `/.netlify/scripts/hud` en el HTML servido. Es normal.

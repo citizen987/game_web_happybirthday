@@ -62,6 +62,21 @@ export const WIN = {
   MESSAGE: '¡FELICIDADES, DAVID!',
 };
 
+// Points = coins * COIN_POINTS + max(0, PAR_SECONDS - whole seconds) * TIME_BONUS_PER_SECOND
+export const SCORE = {
+  COIN_POINTS: 100,
+  PAR_SECONDS: 120,
+  TIME_BONUS_PER_SECOND: 50,
+  BEST_KEY: 'dd-best',
+};
+
+export const SHARE = {
+  URL: 'https://gamehappybirthday.netlify.app/',
+  TITLE: '¡Feliz cumpleaños, David!',
+  FILE_NAME: 'felicidades-david.png',
+  CARD_SIZE: 1080,
+};
+
 export const ASSETS = {
   HEAD: 'assets/head.png',
 };

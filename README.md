@@ -19,6 +19,8 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 - Enemigos: si los pisas, desaparecen; si te tocan de lado, pierdes las monedas (puedes recuperarlas) y parpadeas durante 2 s.
 - Música chiptune original y efectos de sonido generados con WebAudio, con botón de silencio.
 - Controles táctiles multitáctiles y aviso para girar el móvil cuando está en vertical.
+- **Puntuación final** según las monedas y el tiempo, con récord personal guardado en el navegador.
+- **Compartir la felicitación:** abre el menú nativo de compartir de Android/iOS con un texto y una tarjeta-imagen (la cara de David y la puntuación). Si el navegador no lo permite, copia el texto y ofrece descargar la tarjeta.
 
 ## Controles
 
@@ -29,6 +31,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 | Saltar | Espacio / Z / ↑ / W | Botón grande (abajo a la derecha) |
 | Silenciar | M | Botón 🔊 (arriba a la derecha) |
 | Volver a jugar | Enter / Espacio | Botón "Volver a jugar" |
+| Compartir | Botón "Compartir felicitación" | Botón "Compartir felicitación" |
 
 ## Stack
 
@@ -36,6 +39,7 @@ Juego web de plataformas 2D hecho como regalo de cumpleaños para David. Inspira
 - **Módulos ES nativos** (`<script type="module">`): sin frameworks, sin dependencias y sin paso de build.
 - **WebAudio API** para todo el sonido (síntesis en tiempo real, sin archivos de audio).
 - **Pointer Events** para los controles táctiles.
+- **Web Share API** (`navigator.share` con archivos) para compartir, con alternativa de Clipboard API y descarga.
 - **Netlify** como hosting estático, con despliegue continuo desde GitHub.
 
 ## Estructura
@@ -58,6 +62,14 @@ docs/                 Documentación técnica
 ```
 
 Hay más detalle en [docs/architecture.md](docs/architecture.md).
+
+## Puntuación
+
+```
+Puntos = monedas × 100 + max(0, 120 − segundos) × 50
+```
+
+El tiempo cuenta solo mientras se juega (la pausa del móvil en vertical no suma). Los golpes hacen perder monedas, así que la fórmula ya penaliza los choques. Los valores se ajustan en `SCORE` (`src/config.js`).
 
 ## Ejecutar en local
 

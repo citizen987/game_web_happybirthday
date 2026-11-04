@@ -33,6 +33,8 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 | `__dd.state` | Estado actual: `title`, `play` o `win` |
 | `__dd.player` | Objeto del jugador (posición, velocidad, flags) |
 | `__dd.coins` | Monedas recogidas |
+| `__dd.result` | Resultado final (`null` hasta llegar a la meta) |
+| `__dd.shareFile` | `File` PNG de la tarjeta, cuando ya está generado |
 | `__dd.flagX` | Posición x de la meta |
 | `__dd.groundAt(x)` | Altura del suelo en x (`null` sobre un hueco) |
 | `__dd.teleport(x)` | Coloca al jugador en el suelo en x |
@@ -52,6 +54,10 @@ Sin `?debug` no se expone nada.
 | Añadir un sonido | Emitir `world.events.push('nombre')` en `game/` + función `nombre` en `audio/sfx.js` |
 | Cambiar la música | `audio/music.js` → `MAIN_THEME` (notas MIDI, 0 = silencio) |
 | Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` |
+| Cambiar la fórmula de puntuación | `src/config.js` → `SCORE` (y `game/score.js` si cambia la forma) |
+| Cambiar el texto que se comparte | `ui/share.js` → `buildShareText` |
+| Cambiar la URL, el título o el nombre del archivo compartido | `src/config.js` → `SHARE` |
+| Cambiar el diseño de la tarjeta-imagen | `render/share-card.js` (maquetada a 1080 px) |
 | Cambiar el aspecto del personaje | `render/player-view.js` |
 | Cambiar la foto | Sustituye `assets/head.png` y ajusta `HEAD_SPRITE` en `config.js` (caja opaca y posición de la cara y la barbilla) |
 
@@ -73,4 +79,5 @@ No hay CI. Cada push a `main` se publica directamente, así que verifica en loca
 4. Pisar un enemigo lo elimina; tocarlo de lado hace perder monedas y parpadear.
 5. Sonido y botón de silencio (también con la tecla M).
 6. Emulación móvil en DevTools (en horizontal): los botones táctiles funcionan. En vertical aparece el aviso de girar.
-7. Si cambiaste el nivel: comprueba con `?debug` y `teleport` que cada hueco nuevo se puede saltar.
+7. Al terminar: aparece el panel con las monedas, el tiempo y los puntos, y "Compartir felicitación" abre el menú nativo en el móvil. En escritorio sin Web Share, copia el texto y aparece "Descargar tarjeta". Para borrar el récord: `localStorage.removeItem('dd-best')`.
+8. Si cambiaste el nivel: comprueba con `?debug` y `teleport` que cada hueco nuevo se puede saltar.

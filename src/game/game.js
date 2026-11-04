@@ -5,12 +5,13 @@ import { spawnConfetti, spawnFirework, updateEffects } from './effects.js';
 import { updateEnemies } from './enemies.js';
 import { updatePickups } from './pickups.js';
 import { createPlayer, updatePlayer } from './player.js';
+import { computeScore } from './score.js';
 import { createWorld, updatePlatforms } from './world.js';
 
 /**
  * Game state machine: 'title' -> 'play' -> 'win' (-> 'play' on restart).
  * Pure logic: no DOM. Feedback goes out through `sfx` (by event name),
- * `music`, and the `onStateChange` / `onShowWin` callbacks.
+ * `music`, and the `onStateChange` / `onShowWin(result)` callbacks.
  */
 export class Game {
   constructor({ level, sfx, music, onStateChange = () => {}, onShowWin = () => {} }) {
@@ -24,6 +25,8 @@ export class Game {
     this.camera = new Camera();
     this.winT = 0;
     this.winShown = false;
+    this.playFrames = 0;
+    this.result = null;
     this.reset(320);
   }
 
@@ -31,6 +34,8 @@ export class Game {
     this.world = createWorld(this.level);
     this.winT = 0;
     this.winShown = false;
+    this.playFrames = 0;
+    this.result = null;
     this.camera.look = 0;
     this.camera.follow(this.world.player, viewW, this.level.terrain.end, true);
   }
@@ -69,6 +74,11 @@ export class Game {
   }
 
   triggerWin() {
+    this.result = computeScore({
+      coins: this.world.coinCount,
+      frames: this.playFrames,
+      totalCoins: this.level.coins.length,
+    });
     this.setState('win');
     this.winT = 0;
     this.music.stop();
@@ -79,6 +89,7 @@ export class Game {
     this.tick++;
     const jumpPressed = input.consumeJump();
     if (this.state === 'title') return;
+    if (this.state === 'play') this.playFrames++;
 
     const w = this.world;
     updatePlatforms(w, this.tick);
@@ -110,7 +121,7 @@ export class Game {
     spawnConfetti(w, this.camera.x, this.camera.y, viewW);
     if (this.winT === WIN.SHOW_OVERLAY_AT) {
       this.winShown = true;
-      this.onShowWin();
+      this.onShowWin(this.result);
     }
   }
 

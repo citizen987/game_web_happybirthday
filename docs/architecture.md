@@ -46,7 +46,24 @@ title ──start()──▶ play ──bandera──▶ win ──restart()─�
 
 - `title`: escena estática detrás del overlay de inicio. La simulación no avanza.
 - `play`: input activo y controles táctiles visibles (`body[data-state="play"]`).
-- `win`: control bloqueado, saltos de alegría, fuegos artificiales y confeti. En `WIN.SHOW_OVERLAY_AT` aparece el overlay.
+- `win`: control bloqueado, saltos de alegría, fuegos artificiales y confeti. Al entrar se calcula `game.result` (`game/score.js`). En `WIN.SHOW_OVERLAY_AT` se llama a `onShowWin(result)` y aparece el overlay con el panel de puntuación.
+
+## Puntuación y compartir
+
+```
+Game.triggerWin ─▶ computeScore()  ──▶ game.result
+                                         │ onShowWin(result)
+main.showResult ─┬▶ submitBestScore()     (core/best-score.js, localStorage)
+                 ├▶ screens.showWin()     (panel + contador animado)
+                 └▶ createShareCard()     (render/share-card.js → PNG 1080×1080, pregenerado)
+botón Compartir ─▶ shareCongrats()        (ui/share.js)
+                     navigator.share({ text, files }) ─┬▶ menú nativo
+                                                       └▶ fallback: portapapeles + enlace de descarga
+```
+
+- **La tarjeta se genera al mostrar el panel, no al pulsar:** `navigator.share` tiene que llamarse dentro del gesto del usuario, y en iOS cualquier `await` previo (como `canvas.toBlob`) lo invalida.
+- El tiempo sale de `playFrames`, que solo cuenta en el estado `play` y en pasos fijos, así que es independiente de la tasa de refresco y de las pausas.
+- Cancelar el menú de compartir (`AbortError`) no se trata como error.
 
 ## Bucle principal
 
@@ -80,6 +97,11 @@ Orden dentro de `Game.update`:
 | `core/input.js` | Teclado y botones táctiles con *hit-test* por puntero (permite deslizar el dedo entre botones) |
 | `core/audio.js` | `AudioEngine`: contexto, buses, silencio persistente y primitivas `tone`/`noise` |
 | `audio/music.js` | Planificador con *lookahead* y el tema principal como datos |
+| `game/score.js` | `computeScore({ coins, frames, totalCoins })`: función pura |
+| `core/best-score.js` | Récord personal en `localStorage` |
+| `render/share-card.js` | Tarjeta PNG para compartir (cielo, confeti, foto y puntuación) |
+| `ui/share.js` | Texto de la felicitación, Web Share API y portapapeles |
+| `utils/format.js` | `formatPoints` (4.250) y `formatTime` (1:14) |
 
 ## Coordenadas
 

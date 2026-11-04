@@ -7,8 +7,12 @@ export class HeadSprite {
     this.innerH = Math.round(config.INNER_W * config.SRC.h / config.SRC.w);
     this.right = null;
     this.left = null;
+    this.image = null; // original photo, reused for the share card
     const img = new Image();
-    img.onload = () => this.bake(img);
+    img.onload = () => {
+      this.image = img;
+      this.bake(img);
+    };
     img.onerror = () => console.error(`Head sprite could not be loaded from "${url}"`);
     img.src = url;
   }

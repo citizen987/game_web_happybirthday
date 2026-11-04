@@ -1,5 +1,11 @@
-// DOM overlays: title screen, victory screen, and the body[data-state] flag
-// that CSS uses to show/hide touch controls per game state.
+import { formatPoints, formatTime } from '../utils/format.js';
+
+const COUNT_UP_DELAY_MS = 1100;
+const COUNT_UP_MS = 900;
+const TOAST_MS = 2600;
+
+// DOM overlays: title screen, victory screen with score card, toast, and the
+// body[data-state] flag that CSS uses to show/hide touch controls per game state.
 export class Screens {
   constructor(doc = document) {
     this.body = doc.body;
@@ -7,6 +13,16 @@ export class Screens {
     this.winEl = doc.getElementById('win');
     this.messageEl = doc.getElementById('congrats');
     this.againEl = doc.getElementById('again');
+    this.shareEl = doc.getElementById('share');
+    this.downloadEl = doc.getElementById('download');
+    this.coinsEl = doc.getElementById('score-coins');
+    this.timeEl = doc.getElementById('score-time');
+    this.totalEl = doc.getElementById('score-total');
+    this.bestEl = doc.getElementById('score-best');
+    this.toastEl = doc.getElementById('toast');
+    this.countToken = 0;
+    this.toastTimer = null;
+    this.downloadUrl = null;
   }
 
   setState(state) {
@@ -22,12 +38,20 @@ export class Screens {
     this.againEl.addEventListener('click', handler);
   }
 
+  onShare(handler) {
+    this.shareEl.addEventListener('click', handler);
+  }
+
   hideStart() {
     this.startEl.classList.add('hidden');
   }
 
-  // Each letter is its own span so CSS can animate a wave with staggered delays.
-  showWin(message) {
+  /**
+   * @param {string} message animated headline
+   * @param {{coins:number,totalCoins:number,seconds:number,total:number}} result
+   * @param {{best:number,isNewBest:boolean}} record
+   */
+  showWin(message, result, record) {
     this.messageEl.textContent = '';
     Array.from(message).forEach((ch, i) => {
       const span = document.createElement('span');
@@ -35,10 +59,59 @@ export class Screens {
       span.style.animationDelay = `${i * 0.06}s, ${i * 0.1}s`;
       this.messageEl.appendChild(span);
     });
+
+    this.timeEl.textContent = formatTime(result.seconds);
+    this.bestEl.textContent = record.isNewBest ? '🏆 ¡Nuevo récord!' : `Récord: ${formatPoints(record.best)}`;
+    this.bestEl.classList.toggle('is-new', record.isNewBest);
+    this.setCardDownload(null);
+    this.countUp(result);
     this.winEl.classList.remove('hidden');
   }
 
   hideWin() {
+    this.countToken++;
     this.winEl.classList.add('hidden');
+    this.setCardDownload(null);
+  }
+
+  setShareLabel(native) {
+    this.shareEl.textContent = native ? '🎁 Compartir felicitación' : '📋 Copiar felicitación';
+  }
+
+  // Desktop fallback: offer the card as a download when the OS share sheet is unavailable.
+  setCardDownload(file) {
+    if (this.downloadUrl) URL.revokeObjectURL(this.downloadUrl);
+    this.downloadUrl = file ? URL.createObjectURL(file) : null;
+    if (this.downloadUrl) {
+      this.downloadEl.href = this.downloadUrl;
+      this.downloadEl.download = file.name;
+    } else {
+      this.downloadEl.removeAttribute('href');
+    }
+    this.downloadEl.classList.toggle('hidden', !this.downloadUrl);
+  }
+
+  showToast(message) {
+    this.toastEl.textContent = message;
+    this.toastEl.classList.remove('hidden');
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => this.toastEl.classList.add('hidden'), TOAST_MS);
+  }
+
+  // Coins and points tick up once the score card has popped in.
+  countUp(result) {
+    const token = ++this.countToken;
+    this.coinsEl.textContent = `0/${result.totalCoins}`;
+    this.totalEl.textContent = '0';
+    const start = performance.now() + COUNT_UP_DELAY_MS;
+    const step = (now) => {
+      if (token !== this.countToken) return;
+      const k = Math.min(1, Math.max(0, (now - start) / COUNT_UP_MS));
+      const ease = 1 - Math.pow(1 - k, 3);
+      this.coinsEl.textContent = `${Math.round(result.coins * ease)}/${result.totalCoins}`;
+      this.totalEl.textContent = formatPoints(result.total * ease);
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 }

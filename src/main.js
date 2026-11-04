@@ -1,18 +1,21 @@
 // Composition root: creates every module, wires them together and runs the loop.
 import { createSfx } from './audio/sfx.js';
 import { MusicPlayer } from './audio/music.js';
-import { ASSETS, HEAD_SPRITE, TIMESTEP, WIN } from './config.js';
+import { ASSETS, HEAD_SPRITE, SCORE, TIMESTEP, WIN } from './config.js';
 import { AudioEngine } from './core/audio.js';
+import { submitBestScore } from './core/best-score.js';
 import { Display } from './core/display.js';
 import { Input } from './core/input.js';
 import { Game } from './game/game.js';
 import { HeadSprite } from './render/head-sprite.js';
 import { Renderer } from './render/renderer.js';
+import { createShareCard } from './render/share-card.js';
 import {
   blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
 } from './ui/device.js';
 import { MuteButton } from './ui/mute-button.js';
 import { Screens } from './ui/screens.js';
+import { buildShareText, canShareNatively, shareCongrats } from './ui/share.js';
 import { buildLevel } from './world/level.js';
 
 const display = new Display(document.getElementById('game'));
@@ -21,8 +24,11 @@ const music = new MusicPlayer(audio);
 const screens = new Screens(document);
 const muteButton = new MuteButton(document.getElementById('mute'), audio);
 const level = buildLevel();
+const head = new HeadSprite(ASSETS.HEAD, HEAD_SPRITE);
 
 let input = null;
+let shareFile = null;
+let shareCardToken = 0;
 
 const game = new Game({
   level,
@@ -32,8 +38,32 @@ const game = new Game({
     screens.setState(state);
     if (state === 'play') input.layout();
   },
-  onShowWin: () => screens.showWin(WIN.MESSAGE),
+  onShowWin: (result) => showResult(result),
 });
+
+// Score card + share image. The PNG is generated now (not on tap) because
+// navigator.share must be called synchronously inside the tap gesture on iOS.
+function showResult(result) {
+  const record = submitBestScore(SCORE.BEST_KEY, result.total);
+  screens.setShareLabel(canShareNatively());
+  screens.showWin(WIN.MESSAGE, result, record);
+  shareFile = null;
+  const token = ++shareCardToken;
+  createShareCard({ headImage: head.image, result })
+    .then((file) => {
+      if (token !== shareCardToken) return;
+      shareFile = file;
+      if (!canShareNatively()) screens.setCardDownload(file);
+    })
+    .catch((err) => console.warn('Share card could not be generated; sharing text only', err));
+}
+
+async function shareResult() {
+  if (!game.result) return;
+  const outcome = await shareCongrats({ text: buildShareText(game.result), file: shareFile });
+  if (outcome === 'copied') screens.showToast('¡Felicitación copiada! Pégala donde quieras 📋');
+  else if (outcome === 'unavailable') screens.showToast('Este navegador no permite compartir 😕');
+}
 
 function startGame() {
   if (game.state !== 'title') return;
@@ -45,6 +75,8 @@ function startGame() {
 
 function playAgain() {
   audio.unlock();
+  shareCardToken++;
+  shareFile = null;
   screens.hideWin();
   input.reset();
   game.restart(display.width);
@@ -61,6 +93,8 @@ function handleKey(e, action) {
     if (action) e.preventDefault();
     return true;
   }
+  // Let a focused button/link (share, play again, download) handle its own Enter/Space.
+  if (game.state === 'win' && e.target instanceof Element && e.target.closest('button, a')) return true;
   if (game.state === 'win' && game.winShown && (e.code === 'Enter' || action === 'jump') && !e.repeat) {
     e.preventDefault();
     playAgain();
@@ -77,10 +111,11 @@ input = new Input({
 });
 if (prefersTouchControls()) input.enableTouchUI();
 
-const renderer = new Renderer(display, new HeadSprite(ASSETS.HEAD, HEAD_SPRITE));
+const renderer = new Renderer(display, head);
 
 screens.onStart(startGame);
 screens.onPlayAgain(playAgain);
+screens.onShare(shareResult);
 blockBrowserGestures();
 
 window.addEventListener('pointerdown', () => audio.resume());
@@ -103,6 +138,8 @@ if (/[?&]debug\b/.test(location.search)) {
     get state() { return game.state; },
     get player() { return game.world.player; },
     get coins() { return game.world.coinCount; },
+    get result() { return game.result; },
+    get shareFile() { return shareFile; },
     flagX: level.flagX,
     groundAt: (x) => level.terrain.groundAt(x),
     teleport: (x) => game.teleport(x, display.width),
