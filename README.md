@@ -24,6 +24,7 @@ Juego web de plataformas 2D hecho por **Rubén Codina** como regalo de cumpleañ
 - **Letras D-A-V-I-D** escondidas por el nivel (+1.000 puntos cada una y +5.000 por formar el nombre). El marcador superior central las ilumina al cogerlas.
 - **Súper David:** con las cinco letras, el pelo de la foto se vuelve dorado, aparece un aura amarilla y suena una versión acelerada de la música. Corre más, acelera más y salta un poco más. Es **invencible a los enemigos** (los destruye al tocarlos), pero las caídas siguen costando vida. Dura hasta la meta y se conserva al reaparecer.
 - **Puntuación final** según las monedas, el tiempo y las letras, con récord personal guardado en el navegador.
+- **Vista previa del enlace:** al pegar la URL en WhatsApp o Telegram se muestra una tarjeta con la cara de David y "¡Felicidades, David!".
 - **Compartir la felicitación:** abre el menú nativo de compartir de Android/iOS con un texto y una tarjeta-imagen (la cara de David y la puntuación). Si el navegador no lo permite, copia el texto y ofrece descargar la tarjeta.
 
 ## Controles

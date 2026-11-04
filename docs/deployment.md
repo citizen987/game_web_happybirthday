@@ -39,6 +39,15 @@ También fija `Cache-Control: max-age=0, must-revalidate` para `/src/*` y `/css/
 
 Alternativa sin git: arrastra la carpeta del proyecto a https://app.netlify.com/drop.
 
+## Vista previa del enlace (Open Graph)
+
+`index.html` lleva etiquetas `og:*` y `twitter:card`, así que al pegar la URL en WhatsApp o Telegram aparece una tarjeta con la cara de David y "¡Felicidades, David!".
+
+- Imagen: `assets/og-image.png` (1200×630). Lo esencial (título y cara) va dentro del **cuadrado central de 630 px**, porque WhatsApp suele recortar la miniatura así.
+- Se regenera con `python3 -I assets/og/generate_og.py` (Pillow y una fuente Noto Sans o DejaVu Sans en negrita).
+- `og:image` y `og:url` usan la **URL absoluta** de producción; si cambia el dominio, actualízalas.
+- WhatsApp y Facebook cachean la vista previa. Tras cambiar la imagen, puede tardar en verse; el [Sharing Debugger de Facebook](https://developers.facebook.com/tools/debug/) fuerza a releerla.
+
 ## Notas
 
 - Netlify inyecta en el HTML servido un comentario y un script propio (`/.netlify/scripts/hud`). No afectan al juego.
