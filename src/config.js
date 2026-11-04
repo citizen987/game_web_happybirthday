@@ -48,6 +48,14 @@ export const ROLL = {
   HALF_W_BALL: 9,          // hitbox half width for enemies/coins (terrain keeps PLAYER.HALF_W)
 };
 
+// Game-feel effects (dust, shakes). Shake values are frames of camera shake.
+export const FEEL = {
+  LAND_DUST_MIN_VY: 3,     // landing faster than this kicks up dust and a soft thud
+  SKID_MIN_VX: 2,          // reversing direction faster than this kicks up dust
+  RELEASE_SHAKE: 6,
+  KILL_SHAKE: 4,
+};
+
 export const PLAYER = {
   HALF_W: 5,
   H_STAND: 26,

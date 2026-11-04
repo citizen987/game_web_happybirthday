@@ -1,4 +1,4 @@
-import { LIVES, PHYSICS as P, PLAYER, ROLL, SUPER } from '../config.js';
+import { FEEL, LIVES, PHYSICS as P, PLAYER, ROLL, SUPER } from '../config.js';
 import { isBall } from '../model/player-state.js';
 import { approach, clamp } from '../utils/math.js';
 import { spawnParticles } from './effects.js';
@@ -123,7 +123,10 @@ export function updatePlayer(world, input, jumpPressed, mode) {
 
   moveHorizontally(p, terrain);
   followSupport(p, terrain);
+  const wasAirborne = !p.onGround;
+  const impactVy = p.vy;
   applyGravityAndLand(p, terrain, world.platforms, ctrl && !J);
+  addFeelEffects(world, p, ix, wasAirborne, impactVy);
 
   if (p.onGround && Math.abs(p.vx) > 0.1) p.runT += 0.12 + Math.abs(p.vx) * 0.09;
   if (p.charging) p.spin += 0.9 * p.face;
@@ -156,6 +159,7 @@ function updateGroundBall(world, p, down, jumpPressed) {
     p.charge = 0;
     spawnParticles(world, p.x - p.face * (ROLL.RADIUS + 1), p.y - 4, 10, DUST, 1.6, 0, 16);
     world.events.push('release');
+    world.shake = Math.max(world.shake, FEEL.RELEASE_SHAKE);
     return false;
   }
 
@@ -259,6 +263,19 @@ function followSupport(p, terrain) {
 }
 
 // Airborne step: variable jump cut, gravity, landing on ground or one-way platforms.
+// Dust on hard landings and skids: purely cosmetic feedback.
+function addFeelEffects(world, p, ix, wasAirborne, impactVy) {
+  if (wasAirborne && p.onGround && impactVy > FEEL.LAND_DUST_MIN_VY) {
+    spawnParticles(world, p.x - 5, p.y - 1, 3, DUST, 0.9, 0.02, 12);
+    spawnParticles(world, p.x + 5, p.y - 1, 3, DUST, 0.9, 0.02, 12);
+    world.events.push('land');
+  }
+  const skidding = p.onGround && !isBall(p) && ix !== 0 && ix * p.vx < 0 && Math.abs(p.vx) > FEEL.SKID_MIN_VX;
+  if (skidding && ++p.dustT % 3 === 0) {
+    spawnParticles(world, p.x + Math.sign(p.vx) * 4, p.y - 1, 2, DUST, 0.7, -0.02, 12);
+  }
+}
+
 function applyGravityAndLand(p, terrain, platforms, cutJump) {
   p.vyPre = p.vy;
   if (p.onGround) return;

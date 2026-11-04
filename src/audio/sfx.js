@@ -27,6 +27,11 @@ export function createSfx(audio) {
 
     fall: play((t) => audio.tone(t, 900, 110, 0.55, 'square', 0.14)),
 
+    land: play((t) => {
+      audio.noise(t, 0.06, 0.12, 500, 'lowpass');
+      audio.tone(t, 140, 60, 0.07, 'triangle', 0.15);
+    }),
+
     roll: play((t) => {
       audio.tone(t, 420, 180, 0.12, 'square', 0.12);
       audio.noise(t, 0.12, 0.12, 1800, 'bandpass');

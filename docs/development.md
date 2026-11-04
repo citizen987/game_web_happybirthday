@@ -61,6 +61,7 @@ Sin `?debug` no se expone nada.
 | Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` (y `LIVES.GAMEOVER_SUBTITLE` para el fin de partida) |
 | Cambiar las vidas iniciales o la animación de muerte | `src/config.js` → `LIVES` |
 | Ajustar rodar o la carga en parado | `src/config.js` → `ROLL` |
+| Ajustar polvo y temblores (sensación) | `src/config.js` → `FEEL` |
 | Puntos de las letras, notas o poderes de Súper David | `src/config.js` → `LETTERS` y `SUPER` |
 | Mover una letra | `src/world/level.js` → bloque `Letters` |
 | Cambiar el aspecto de la bola | `render/player-view.js` → `BALL` / `drawBall` |

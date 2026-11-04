@@ -1,4 +1,4 @@
-import { PHYSICS, PLAYER } from '../config.js';
+import { FEEL, PHYSICS, PLAYER } from '../config.js';
 import { spawnParticles } from './effects.js';
 import { spillCoins } from './pickups.js';
 import { clearBall, isAttacking, killPlayer, playerHalfW, playerTop } from './player.js';
@@ -54,6 +54,7 @@ function hurtPlayer(world, srcX) {
 
 function destroyEnemy(world, e, top, bottom) {
   e.alive = false;
+  world.shake = Math.max(world.shake, FEEL.KILL_SHAKE);
   spawnParticles(world, e.x, (top + bottom) / 2, 12, ['#ffffff', '#dfe6ff', '#ffd23a'], 1.8, 0.02, 20);
   world.events.push('stomp');
 }
