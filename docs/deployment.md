@@ -11,8 +11,10 @@
 ```toml
 [build]
   publish = "."   # se publica la raíz del repo
-  command = ""    # sin build
+  command = "bash .github/scripts/stamp-version.sh src/version.js"
 ```
+
+No hay bundler ni dependencias. El único paso de build sella la versión: `stamp-version.sh` sustituye `'dev'` en `src/version.js` por el hash corto del commit y su fecha y hora (en hora de Madrid), por ejemplo `f55a6ae · 04/11/2026 18:44`. Ese texto aparece abajo a la izquierda en la pantalla de inicio y sirve para saber qué versión se está probando. Si falta `git` o el marcador `'dev'`, el script falla y el deploy se cancela: producción sigue con la versión anterior. En local se ve `dev`.
 
 También fija `Cache-Control: max-age=0, must-revalidate` para `/src/*` y `/css/*`. Así, tras un deploy, los navegadores no mezclan módulos viejos y nuevos.
 
@@ -34,7 +36,7 @@ También fija `Cache-Control: max-age=0, must-revalidate` para `/src/*` y `/css/
 ## Montarlo desde cero (otra cuenta o sitio nuevo)
 
 1. En Netlify: **Add new site → Import an existing project → GitHub** y elige el repositorio.
-2. Deja vacío el *Build command* y pon `.` en el *Publish directory*. `netlify.toml` ya lo fija igualmente.
+2. Pon `.` en el *Publish directory*. El *Build command* (el sellado de versión) ya lo fija `netlify.toml`.
 3. **Deploy.** Para cambiar el subdominio: *Site configuration → Change site name*.
 
 Alternativa sin git: arrastra la carpeta del proyecto a https://app.netlify.com/drop.
@@ -62,7 +64,7 @@ El workflow `.github/workflows/pages.yml` publica el juego en GitHub Pages en ca
 **Qué hace el workflow:**
 
 - `node .github/scripts/check-precache.mjs`: falla si algún módulo de `src/` no está en el `PRECACHE` de `sw.js`.
-- `bash .github/scripts/build-pages.sh` monta `_site/` **solo con los archivos del juego** (`index.html`, `sw.js`, `manifest.webmanifest`, `robots.txt`, `css/`, `src/` y los PNG de `assets/`) y reescribe las URL absolutas de Open Graph con la de GitHub Pages, para que la vista previa del enlace apunte a ese sitio. **Si añades archivos o carpetas nuevos del juego en la raíz o en `assets/`, añádelos también a este script.**
+- `bash .github/scripts/build-pages.sh` monta `_site/` **solo con los archivos del juego** (`index.html`, `sw.js`, `manifest.webmanifest`, `robots.txt`, `css/`, `src/` y los PNG de `assets/`) sella la versión en `_site/src/version.js` (con el mismo `stamp-version.sh`) y reescribe las URL absolutas de Open Graph con la de GitHub Pages, para que la vista previa del enlace apunte a ese sitio. **Si añades archivos o carpetas nuevos del juego en la raíz o en `assets/`, añádelos también a este script.**
 - Se publica con `actions/upload-pages-artifact` y `actions/deploy-pages`.
 
 Para probarlo en local: `SITE_URL=https://citizen987.github.io/game_web_happybirthday bash .github/scripts/build-pages.sh` y servir `_site/` dentro de una carpeta `game_web_happybirthday/`.

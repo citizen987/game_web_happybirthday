@@ -17,6 +17,7 @@ import { OverlayGuard } from './ui/overlay-guard.js';
 import { registerServiceWorker } from './ui/pwa.js';
 import { Screens } from './ui/screens.js';
 import { ShareFlow } from './ui/share-flow.js';
+import { VERSION } from './version.js';
 import { buildLevel } from './world/level.js';
 
 const display = new Display(document.getElementById('game'));
@@ -128,6 +129,7 @@ screens.onShare(() => shareFlow.share());
 screens.onPauseToggle(togglePause);
 blockBrowserGestures();
 
+screens.setVersion(VERSION);
 if (needsHomeScreenHint()) screens.showHomeScreenHint();
 
 // iOS only resumes audio on some gestures (touchend/click, not pointerdown), so try them all.

@@ -96,6 +96,14 @@ body.touch .help { display: none; }
   font-size: clamp(10px, 1.6vw, 13px); line-height: 1.3;
   text-shadow: 1px 1px 0 #000;
 }
+.version {
+  position: absolute;
+  left: calc(8px + env(safe-area-inset-left)); bottom: calc(6px + env(safe-area-inset-bottom));
+  margin: 0;
+  color: #fff; opacity: .7;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  text-shadow: 1px 1px 0 #000;
+}
 @keyframes bob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-10px) rotate(4deg); } }
 @keyframes blink { to { visibility: hidden; } }
 

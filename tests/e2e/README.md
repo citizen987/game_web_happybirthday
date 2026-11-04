@@ -41,6 +41,7 @@ Todas cargan `index.html?debug`, manejan el juego a través de `window.__dd` y f
 | `victory-song` | Al ganar se programa "Cumpleaños feliz" (cuenta de osciladores creados) y "Volver a jugar" la corta sin errores. |
 | `timer` | El cronómetro está a 0 en el inicio, avanza en partida, se detiene en pausa, se congela en la meta e iguala el tiempo puntuado; el panel usa MM:SS; en 16:9, móvil y tablet queda dentro del lienzo y sin solaparse con ⏸/🔊. |
 | `ios` | iPhone simulado (UA, sin Fullscreen API, `navigator.audioSession` falso): el aviso lateral "Añadir a pantalla de inicio" aparece en el inicio sin tapar el título y desaparece al jugar; la sesión de audio pasa a `playback`; un contexto suspendido se reanuda con el siguiente toque. Abierto desde la pantalla de inicio no hay aviso. Android: sin aviso y sigue pidiendo pantalla completa. |
+| `version` | `stamp-version.sh` sobre una copia de `src/version.js` genera `hash · DD/MM/YYYY HH:MM` con el commit actual y falla si ya no está el marcador `'dev'`. En el inicio, la etiqueta muestra `dev`, está abajo a la izquierda y desaparece al jugar. |
 | `overlays` | En el móvil, una píldora tipo Netlify (iframe abajo a la derecha) sube el botón de salto sin solaparse y el botón sigue funcionando; al quitarla vuelve a su sitio; una barra de otro hosting abajo a la izquierda sube la cruceta; un banner grande se ignora. |
 
 ## Añadir una suite

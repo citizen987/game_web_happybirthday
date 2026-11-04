@@ -20,6 +20,7 @@ cp index.html sw.js manifest.webmanifest robots.txt "$OUT/"
 cp -r css src "$OUT/"
 cp assets/head.png assets/og-image.png "$OUT/assets/"
 cp assets/icons/*.png "$OUT/assets/icons/"
+bash .github/scripts/stamp-version.sh "$OUT/src/version.js"
 touch "$OUT/.nojekyll"   # serve files as-is, no Jekyll processing
 
 # Open Graph needs absolute URLs; rewrite them for this host.

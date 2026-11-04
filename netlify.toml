@@ -1,7 +1,8 @@
-# Static site: no build step, publish the repository root as-is.
+# Static site: no bundling, publish the repository root as-is. The only build step
+# stamps the commit hash and date into src/version.js (shown on the title screen).
 [build]
   publish = "."
-  command = ""
+  command = "bash .github/scripts/stamp-version.sh src/version.js"
 
 # Fresh code after every deploy (no stale cached modules after an update).
 [[headers]]

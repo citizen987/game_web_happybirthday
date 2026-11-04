@@ -1,7 +1,7 @@
 // Service worker: offline play with network-first updates.
 // Bump CACHE_VERSION when the precache list changes; network-first already
 // serves fresh files on every online visit.
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `david-dash-${CACHE_VERSION}`;
 
 // App shell. MUST be updated when files are added, renamed or removed
@@ -57,6 +57,7 @@ const PRECACHE = [
   'src/utils/storage.js',
   'src/world/level.js',
   'src/world/terrain.js',
+  'src/version.js',
 ];
 
 // Navigations (any query string: ?debug, ?fbclid=...) share one cache entry.

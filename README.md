@@ -102,7 +102,7 @@ El sitio **no se indexa en buscadores** (`noindex` y `robots.txt`), pero los enl
 
 ## Despliegue en Netlify
 
-El sitio está conectado al repositorio de GitHub: **cada `git push` a `main` publica automáticamente**. No hay comando de build; Netlify sirve la raíz tal cual (lo fija `netlify.toml`).
+El sitio está conectado al repositorio de GitHub: **cada `git push` a `main` publica automáticamente**. Netlify sirve la raíz tal cual (lo fija `netlify.toml`); el único paso de build sella en `src/version.js` el hash y la fecha del commit, que se ven abajo a la izquierda en la pantalla de inicio.
 
 Los detalles y la puesta en marcha desde cero están en [docs/deployment.md](docs/deployment.md).
 
