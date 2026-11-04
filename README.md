@@ -94,6 +94,12 @@ Luego abre http://localhost:8000. Para probarlo en el móvil, entra desde la mis
 
 Hay más información en [docs/development.md](docs/development.md).
 
+## Despliegue en GitHub Pages
+
+Un workflow de GitHub Actions (`.github/workflows/pages.yml`) publica solo los archivos del juego en `https://citizen987.github.io/game_web_happybirthday/` en cada push a `main`. Hay que activarlo una vez (repo público y *Pages → Source: GitHub Actions*); detalles en [docs/deployment.md](docs/deployment.md).
+
+El sitio **no se indexa en buscadores** (`noindex` y `robots.txt`), pero los enlaces compartidos siguen mostrando la vista previa.
+
 ## Despliegue en Netlify
 
 El sitio está conectado al repositorio de GitHub: **cada `git push` a `main` publica automáticamente**. No hay comando de build; Netlify sirve la raíz tal cual (lo fija `netlify.toml`).

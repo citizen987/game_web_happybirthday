@@ -14,6 +14,12 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# Keep the whole site out of search engines (complements the robots meta tag and robots.txt).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # PWA: the service worker and manifest must always be revalidated so new
 # versions are detected right after a deploy.
 [[headers]]
@@ -81,6 +87,12 @@
 
 [[redirects]]
   from = "/.gitignore"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.github/*"
   to = "/404"
   status = 404
   force = true

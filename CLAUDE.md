@@ -113,5 +113,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - **Predicados compartidos:** lo que necesiten a la vez `game/` y `render/` (como `isBall`) va en `src/model/`, que no depende de nada.
 - **Compartir:** `navigator.share` exige un gesto del usuario y en iOS se invalida si hay un `await` previo. Por eso la tarjeta PNG se pregenera en `showResult` (`main.js`) y `shareCongrats` llama a `share` antes de cualquier `await`. No muevas la generación al clic.
 - **Web Share en Playwright:** headless no la tiene. Simúlala con `addInitScript` (`navigator.share`/`canShare`) para la ruta nativa, y bórrala (`delete Navigator.prototype.share`) para probar la alternativa del portapapeles.
+- **Dos destinos de despliegue:** Netlify (raíz del repo, filtrado por `netlify.toml`) y GitHub Pages (`.github/workflows/pages.yml`, solo lo que copia `.github/scripts/build-pages.sh`). Si añades archivos del juego en la raíz o en `assets/`, añádelos al script de build. Las URL absolutas de Open Graph se reescriben en el build de Pages; las de compartir salen de `src/core/site.js`.
+- **No indexar:** mantén `<meta name="robots" content="noindex, nofollow">`, `robots.txt` y la cabecera `X-Robots-Tag` de Netlify.
 - **`data-ui` en los elementos de primer nivel:** todo elemento nuevo que añadas directamente en `<body>` debe llevar `data-ui`. Si no, `OverlayGuard` lo tomará por un elemento ajeno (del hosting) y moverá los botones táctiles.
 - **Netlify** inyecta un comentario y un script `/.netlify/scripts/hud` en el HTML servido. Es normal.

@@ -1,4 +1,5 @@
 import { SHARE } from '../config.js';
+import { siteUrl } from '../core/site.js';
 import { formatPoints, formatTime } from '../utils/format.js';
 
 export const canShareNatively = () => typeof navigator.share === 'function';
@@ -8,14 +9,14 @@ export const canShareNatively = () => typeof navigator.share === 'function';
 export function buildShareText(result) {
   if (!result) {
     return `🎂 ¡Feliz cumpleaños, David! Te he felicitado jugando a David Dash, `
-      + `el juego de tu cumpleaños. ¿Llegarás tú a la meta? 👉 ${SHARE.URL}`;
+      + `el juego de tu cumpleaños. ¿Llegarás tú a la meta? 👉 ${siteUrl()}`;
   }
   const extra = result.wordComplete
     ? ' ¡Y junté las letras de DAVID para convertirme en Súper David! ✨'
     : result.letterCount > 0 ? ` Conseguí ${result.letterCount} de las 5 letras de DAVID.` : '';
   return `🎂 ¡Feliz cumpleaños, David! Te he felicitado corriendo en David Dash: `
     + `${formatPoints(result.total)} puntos (${result.coins} monedas en ${formatTime(result.seconds)}).${extra} `
-    + `¿Quién se anima a superarlo? 👉 ${SHARE.URL}`;
+    + `¿Quién se anima a superarlo? 👉 ${siteUrl()}`;
 }
 
 /**

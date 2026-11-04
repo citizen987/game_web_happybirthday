@@ -1,7 +1,7 @@
 // Service worker: offline play with network-first updates.
 // Bump CACHE_VERSION when the precache list changes; network-first already
 // serves fresh files on every online visit.
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `david-dash-${CACHE_VERSION}`;
 
 // App shell. MUST be updated when files are added, renamed or removed
@@ -23,6 +23,7 @@ const PRECACHE = [
   'src/core/best-score.js',
   'src/core/display.js',
   'src/core/input.js',
+  'src/core/site.js',
   'src/game/camera.js',
   'src/game/effects.js',
   'src/game/enemies.js',

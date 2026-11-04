@@ -1,0 +1,15 @@
+# David Dash is a private birthday gift: keep it out of search engines.
+# Link-preview bots stay allowed so shared links still show the preview card.
+# (The page also carries <meta name="robots" content="noindex, nofollow">.)
+
+User-agent: facebookexternalhit
+User-agent: Facebot
+User-agent: WhatsApp
+User-agent: TelegramBot
+User-agent: Twitterbot
+User-agent: Discordbot
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: *
+Disallow: /

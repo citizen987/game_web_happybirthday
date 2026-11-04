@@ -39,7 +39,12 @@ export default async function pwa({ browser, baseUrl }) {
     const head = await g.ev(() => ({
       manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href'),
       ogImage: document.querySelector('meta[property="og:image"]')?.content,
+      robots: document.querySelector('meta[name="robots"]')?.content,
     }));
+    assert.equal(head.robots, 'noindex, nofollow', 'page asks search engines not to index it');
+    const robotsTxt = readFileSync(join(ROOT, 'robots.txt'), 'utf8');
+    assert.match(robotsTxt, /User-agent: \*\s+Disallow: \//, 'robots.txt blocks search engines');
+    assert.match(robotsTxt, /User-agent: WhatsApp/, 'robots.txt keeps link-preview bots allowed');
     assert.equal(head.manifest, 'manifest.webmanifest');
     assert.ok(head.ogImage && head.ogImage.startsWith('https://'), 'og:image is an absolute URL');
     assert.ok(existsSync(join(ROOT, new URL(head.ogImage).pathname.slice(1))), 'og:image file exists in the repo');

@@ -133,7 +133,7 @@ export const AUTHOR = {
 };
 
 export const SHARE = {
-  URL: 'https://gamehappybirthday.netlify.app/',
+  URL: 'https://gamehappybirthday.netlify.app/', // canonical; used when not served over HTTPS (see core/site.js)
   TITLE: '¡Feliz cumpleaños, David!',
   FILE_NAME: 'felicidades-david.png',
   CARD_SIZE: 1080,
