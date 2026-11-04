@@ -154,6 +154,10 @@ Orden dentro de `Game.update`:
 - Va arriba a la derecha, pero los botones ⏸/🔊 son DOM fijo a la pantalla y pueden tapar esa esquina del lienzo según su proporción. `Display.measureHudInsetRight()` calcula cuántos píxeles internos invaden (0 si caen en la banda) y `hud.js` (`timerBox`) alinea el cronómetro a su izquierda. Se recalcula al redimensionar y al cambiar de estado (⏸ solo existe en `play`).
 - Pasados `SCORE.PAR_SECONDS` cambia a un color apagado, porque el bonus de tiempo ya es 0.
 
+## Controles táctiles frente a elementos del hosting
+
+`ui/overlay-guard.js` (`OverlayGuard`) evita que elementos ajenos tapen los botones táctiles, por ejemplo la píldora "Netlify" que el plan gratuito inyecta abajo a la derecha y que no se puede ocultar. **No depende del hosting:** no busca la píldora de Netlify, sino cualquier elemento fijo de primer nivel que **no tenga `data-ui`** y se solape con un grupo de botones. Entonces sube ese grupo lo justo (`--jump-lift` para el salto y `--pad-lift` para la cruceta). Ignora los elementos muy grandes (modales, avisos de cookies) y limita la subida al 40 % del alto. Sin elementos ajenos no mueve nada. Se recalcula con un `MutationObserver`, al redimensionar y al entrar en `play`, y después vuelve a medir la geometría táctil (`input.layout()`).
+
 ## Coordenadas
 
 - Resolución interna fija **320×180 (16:9)**, igual en todos los dispositivos, para que todos vean el mismo encuadre. Se escala con CSS al mayor tamaño que quepa; en pantallas más alargadas (móviles ~20:9) o más cuadradas (tablets 4:3) quedan bandas decorativas que imitan el cielo y el suelo.

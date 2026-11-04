@@ -99,7 +99,7 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 ```
 
 - `?debug` en la URL expone `window.__dd` con `state`, `player`, `coins`, `flagX`, `groundAt(x)` y `teleport(x)`. El usuario quiere mantener este hook.
-- **Suite E2E en el repo** (`tests/e2e/`, Playwright con `playwright-core`, servidor estático propio): `cd tests/e2e && npm install && npm test` (o `npm test -- <suite>`). Suites: `pwa`, `playthrough`, `mobile`, `share`, `lives`, `roll`, `letters`, `pause`, `feel`, `victory-song`, `timer`. Todo cambio debe dejarla en verde, y cada funcionalidad nueva añade o amplía una suite (ver `tests/e2e/README.md`). Las suites usan el hook `?debug` (`window.__dd`).
+- **Suite E2E en el repo** (`tests/e2e/`, Playwright con `playwright-core`, servidor estático propio): `cd tests/e2e && npm install && npm test` (o `npm test -- <suite>`). Suites: `pwa`, `playthrough`, `mobile`, `share`, `lives`, `roll`, `letters`, `pause`, `feel`, `victory-song`, `timer`, `overlays`. Todo cambio debe dejarla en verde, y cada funcionalidad nueva añade o amplía una suite (ver `tests/e2e/README.md`). Las suites usan el hook `?debug` (`window.__dd`).
 - Si añades un módulo a `src/`, añádelo también al `PRECACHE` de `sw.js` y sube `CACHE_VERSION`: la suite `pwa` falla si falta.
 - Tras cada cambio, da al usuario una checklist de verificación manual adaptada a lo modificado (ver `docs/development.md`).
 
@@ -113,4 +113,5 @@ python3 -m http.server 8000   # file:// no funciona con módulos ES
 - **Predicados compartidos:** lo que necesiten a la vez `game/` y `render/` (como `isBall`) va en `src/model/`, que no depende de nada.
 - **Compartir:** `navigator.share` exige un gesto del usuario y en iOS se invalida si hay un `await` previo. Por eso la tarjeta PNG se pregenera en `showResult` (`main.js`) y `shareCongrats` llama a `share` antes de cualquier `await`. No muevas la generación al clic.
 - **Web Share en Playwright:** headless no la tiene. Simúlala con `addInitScript` (`navigator.share`/`canShare`) para la ruta nativa, y bórrala (`delete Navigator.prototype.share`) para probar la alternativa del portapapeles.
+- **`data-ui` en los elementos de primer nivel:** todo elemento nuevo que añadas directamente en `<body>` debe llevar `data-ui`. Si no, `OverlayGuard` lo tomará por un elemento ajeno (del hosting) y moverá los botones táctiles.
 - **Netlify** inyecta un comentario y un script `/.netlify/scripts/hud` en el HTML servido. Es normal.

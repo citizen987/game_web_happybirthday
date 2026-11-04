@@ -40,6 +40,7 @@ Todas cargan `index.html?debug`, manejan el juego a través de `window.__dd` y f
 | `feel` | Polvo al aterrizar desde altura y al derrapar; temblor de cámara al soltar la carga. |
 | `victory-song` | Al ganar se programa "Cumpleaños feliz" (cuenta de osciladores creados) y "Volver a jugar" la corta sin errores. |
 | `timer` | El cronómetro está a 0 en el inicio, avanza en partida, se detiene en pausa, se congela en la meta e iguala el tiempo puntuado; el panel usa MM:SS; en 16:9, móvil y tablet queda dentro del lienzo y sin solaparse con ⏸/🔊. |
+| `overlays` | En el móvil, una píldora tipo Netlify (iframe abajo a la derecha) sube el botón de salto sin solaparse y el botón sigue funcionando; al quitarla vuelve a su sitio; una barra de otro hosting abajo a la izquierda sube la cruceta; un banner grande se ignora. |
 
 ## Añadir una suite
 

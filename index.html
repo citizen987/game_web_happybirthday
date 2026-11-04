@@ -30,16 +30,16 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body data-state="title">
-<canvas id="game" width="320" height="180"></canvas>
+<canvas data-ui id="game" width="320" height="180"></canvas>
 
-<div id="touch">
+<div data-ui id="touch">
   <div class="tbtn" data-btn="left"><svg viewBox="0 0 24 24"><path d="M17 3 L5 12 L17 21 Z"/></svg></div>
   <div class="tbtn" data-btn="down"><svg viewBox="0 0 24 24"><path d="M3 7 L12 19 L21 7 Z"/></svg></div>
   <div class="tbtn" data-btn="right"><svg viewBox="0 0 24 24"><path d="M7 3 L19 12 L7 21 Z"/></svg></div>
   <div class="tbtn" data-btn="jump"><svg viewBox="0 0 24 24"><path d="M12 3 L22 14 L15.5 14 L15.5 21 L8.5 21 L8.5 14 L2 14 Z"/></svg></div>
 </div>
 
-<div id="start" class="overlay">
+<div data-ui id="start" class="overlay">
   <img src="assets/head.png" alt="" class="title-face">
   <div class="title">DAVID DASH</div>
   <p class="blink">Toca o pulsa una tecla para empezar</p>
@@ -47,7 +47,7 @@
   <p class="help">Flechas / WASD para moverte &middot; Espacio o Z para saltar &middot; Abajo corriendo para rodar &middot; Abajo + saltar para cargar &middot; P pausa &middot; M silencia</p>
 </div>
 
-<div id="win" class="overlay hidden" data-mode="win">
+<div data-ui id="win" class="overlay hidden" data-mode="win">
   <img src="assets/head.png" alt="David" class="big-face">
   <div id="congrats"></div>
   <div id="score-card" class="score-card">
@@ -68,14 +68,14 @@
   </div>
 </div>
 
-<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<div data-ui id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-<div id="banner" class="banner hidden" aria-live="polite"></div>
+<div data-ui id="banner" class="banner hidden" aria-live="polite"></div>
 
-<button id="mute" type="button" aria-label="Silenciar"></button>
-<button id="pause" type="button" aria-label="Pausa"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg></button>
+<button data-ui id="mute" type="button" aria-label="Silenciar"></button>
+<button data-ui id="pause" type="button" aria-label="Pausa"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg></button>
 
-<div id="pause-overlay" class="overlay hidden">
+<div data-ui id="pause-overlay" class="overlay hidden">
   <div class="pause-card">
     <div class="pause-title">PAUSA</div>
     <button id="resume" type="button" class="btn btn-primary">▶ Continuar</button>
@@ -83,7 +83,7 @@
   </div>
 </div>
 
-<div id="rotate">
+<div data-ui id="rotate">
   <svg viewBox="0 0 48 48"><rect x="14" y="4" width="20" height="40" rx="3"/><line x1="21" y1="38" x2="27" y2="38"/></svg>
   <p>Gira el móvil para jugar</p>
 </div>

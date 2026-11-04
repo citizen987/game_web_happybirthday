@@ -13,6 +13,7 @@ import {
   blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
 } from './ui/device.js';
 import { MuteButton } from './ui/mute-button.js';
+import { OverlayGuard } from './ui/overlay-guard.js';
 import { registerServiceWorker } from './ui/pwa.js';
 import { Screens } from './ui/screens.js';
 import { ShareFlow } from './ui/share-flow.js';
@@ -29,6 +30,7 @@ const head = new HeadSprite(ASSETS.HEAD, HEAD_SPRITE);
 const shareFlow = new ShareFlow({ screens, head });
 
 let input = null;
+let overlayGuard = null;
 
 const game = new Game({
   level,
@@ -37,7 +39,10 @@ const game = new Game({
   onStateChange: (state) => {
     screens.setState(state);
     measureHudInset();
-    if (state === 'play') input.layout();
+    if (state === 'play') {
+      overlayGuard.refresh();
+      input.layout();
+    }
   },
   onShowWin: (result) => shareFlow.showWin(result),
   onGameOver: () => shareFlow.showGameOver(),
@@ -106,6 +111,13 @@ input = new Input({
   onKey: handleKey,
 });
 if (prefersTouchControls()) input.enableTouchUI();
+
+// Lift touch buttons above any foreign overlay (host badges such as Netlify's), host-agnostic.
+overlayGuard = new OverlayGuard({
+  touchRoot: document.getElementById('touch'),
+  onChange: () => input.layout(),
+});
+overlayGuard.start();
 
 const renderer = new Renderer(display, head);
 

@@ -54,6 +54,6 @@ Netlify publica la raíz del repo, así que `netlify.toml` oculta con **redirecc
 
 ## Notas
 
-- Netlify inyecta en el HTML servido un comentario y un script propio (`/.netlify/scripts/hud`). No afectan al juego.
+- Netlify inyecta en el HTML servido un comentario y un script propio (`/.netlify/scripts/hud`) que muestra una **píldora "Netlify" abajo a la derecha**. En el plan gratuito no se puede ocultar (el propio script ignora el "ocultar"), así que el juego **sube los botones táctiles** que quedarían tapados (`ui/overlay-guard.js`). Funciona con cualquier hosting: si no hay píldora, no mueve nada.
 - Antes de hacer push, comprueba que la identidad de git sea la personal (`git config user.email`). El repo la tiene fijada en su configuración local.
 - Volver a una versión anterior: en *Deploys*, elige un deploy previo y pulsa **Publish deploy**.
