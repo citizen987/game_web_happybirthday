@@ -84,6 +84,18 @@ body.touch .help { display: none; }
   font-size: clamp(12px, 2.2vw, 18px);
   text-shadow: 1px 1px 0 #000, 0 0 8px rgba(0, 0, 0, .5);
 }
+.home-hint {
+  position: absolute;
+  top: 50%; right: calc(10px + env(safe-area-inset-right));
+  transform: translateY(-50%);
+  width: min(17vw, 150px);
+  margin: 0; padding: .6em .7em;
+  border: 2px solid #ffd23a; border-radius: 10px;
+  background: rgba(0, 0, 40, .55);
+  color: #fff; font-family: system-ui, sans-serif; font-weight: 600;
+  font-size: clamp(10px, 1.6vw, 13px); line-height: 1.3;
+  text-shadow: 1px 1px 0 #000;
+}
 @keyframes bob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-10px) rotate(4deg); } }
 @keyframes blink { to { visibility: hidden; } }
 

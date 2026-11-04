@@ -22,7 +22,8 @@ Abre http://localhost:8000.
 1. Arranca el servidor en el PC.
 2. Desde el móvil, en la misma wifi, abre `http://<ip-del-pc>:8000`.
 3. El audio solo arranca tras tocar la pantalla de inicio (lo exigen los navegadores).
-4. En iPhone, el interruptor de silencio físico también silencia WebAudio.
+4. En iPhone (Safari 17+), el juego pide una sesión de audio `playback` (`navigator.audioSession`), así que suena aunque el interruptor de silencio físico esté activado. En versiones anteriores de iOS, ese interruptor sigue silenciando WebAudio.
+5. iPhone no tiene la Fullscreen API: en la pantalla de inicio aparece un aviso lateral que sugiere "Añadir a pantalla de inicio". No sale en Android, ni en iPad, ni si el juego ya se abrió desde el icono.
 
 ## Modo depuración
 
@@ -36,6 +37,7 @@ Añade `?debug` a la URL (`http://localhost:8000/?debug`) para exponer `window._
 | `__dd.lives` | Vidas restantes |
 | `__dd.paused` | Juego en pausa |
 | `__dd.time` / `__dd.timerBox()` | Tiempo de partida en segundos (el del cronómetro) / caja del cronómetro en píxeles internos |
+| `__dd.audioState` / `__dd.suspendAudio()` | Estado del `AudioContext` (`null` antes del primer gesto, `running`, `suspended`) / lo suspende para probar que el siguiente toque lo reanuda |
 | `__dd.super` / `__dd.freeze` | Súper David activo / frames restantes de la secuencia de transformación |
 | `__dd.world` | Estado completo de la partida (para pruebas: `world.coinCount = 0`, `world.enemies`…) |
 | `__dd.result` | Resultado final (`null` hasta llegar a la meta) |

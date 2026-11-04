@@ -13,6 +13,7 @@ export class Screens {
   constructor(doc = document) {
     this.body = doc.body;
     this.startEl = doc.getElementById('start');
+    this.homeHintEl = doc.getElementById('home-hint');
     this.winEl = doc.getElementById('win');
     this.messageEl = doc.getElementById('congrats');
     this.againEl = doc.getElementById('again');
@@ -42,6 +43,10 @@ export class Screens {
   // Several event types because iOS only unlocks audio on some gestures.
   onStart(handler) {
     for (const type of ['pointerup', 'touchend', 'click']) this.startEl.addEventListener(type, handler);
+  }
+
+  showHomeScreenHint() {
+    this.homeHintEl.classList.remove('hidden');
   }
 
   onPlayAgain(handler) {

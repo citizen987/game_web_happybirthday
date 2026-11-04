@@ -15,6 +15,20 @@ export function blockBrowserGestures() {
   document.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
+const isAppleMobile = /iP(hone|od|ad)/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+
+const hasFullscreenApi = () => {
+  const el = document.documentElement;
+  return typeof (el.requestFullscreen || el.webkitRequestFullscreen) === 'function';
+};
+
+const isStandalone = () => navigator.standalone === true
+  || window.matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches;
+
+// iPhone Safari cannot go fullscreen from a page; the home-screen app can.
+export const needsHomeScreenHint = () => isAppleMobile && !hasFullscreenApi() && !isStandalone();
+
 // Best effort: Android Chrome supports both; iPhone Safari supports neither.
 export function requestLandscapeFullscreen() {
   const el = document.documentElement;

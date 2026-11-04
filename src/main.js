@@ -10,7 +10,7 @@ import { HeadSprite } from './render/head-sprite.js';
 import { timerBox } from './render/hud.js';
 import { Renderer } from './render/renderer.js';
 import {
-  blockBrowserGestures, isTouchDevice, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
+  blockBrowserGestures, isTouchDevice, needsHomeScreenHint, portraitQuery, prefersTouchControls, requestLandscapeFullscreen,
 } from './ui/device.js';
 import { MuteButton } from './ui/mute-button.js';
 import { OverlayGuard } from './ui/overlay-guard.js';
@@ -49,9 +49,10 @@ const game = new Game({
   onTransform: () => screens.showBanner(SUPER.BANNER),
 });
 
+// Unlock on every start event, not only the first: iOS may reject the first one as a gesture.
 function startGame() {
-  if (game.state !== 'title') return;
   audio.unlock();
+  if (game.state !== 'title') return;
   if (isTouchDevice) requestLandscapeFullscreen();
   screens.hideStart();
   game.start(display.width);
@@ -127,9 +128,14 @@ screens.onShare(() => shareFlow.share());
 screens.onPauseToggle(togglePause);
 blockBrowserGestures();
 
-window.addEventListener('pointerdown', () => {
-  if (!game.paused) audio.resume();
-});
+if (needsHomeScreenHint()) screens.showHomeScreenHint();
+
+// iOS only resumes audio on some gestures (touchend/click, not pointerdown), so try them all.
+for (const type of ['pointerdown', 'touchend', 'click']) {
+  window.addEventListener(type, () => {
+    if (!game.paused) audio.resume();
+  });
+}
 document.addEventListener('visibilitychange', () => {
   // Leaving the tab/app pauses the game; coming back keeps it paused until the player resumes.
   if (document.hidden) {
@@ -165,6 +171,8 @@ if (/[?&]debug\b/.test(location.search)) {
     get freeze() { return game.freeze; },
     get paused() { return game.paused; },
     get time() { return game.playFrames * TIMESTEP; },
+    get audioState() { return audio.ctx ? audio.ctx.state : null; },
+    suspendAudio: () => audio.suspend(),
     get hudInsetRight() { return display.hudInsetRight; },
     timerBox: () => timerBox(display.width, display.hudInsetRight),
     get world() { return game.world; },

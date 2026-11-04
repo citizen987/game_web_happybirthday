@@ -8,7 +8,7 @@ import { startStaticServer } from './lib/server.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, '..', '..');
-const SUITES = ['pwa', 'playthrough', 'mobile', 'share', 'lives', 'roll', 'letters', 'pause', 'feel', 'victory-song', 'timer', 'overlays'];
+const SUITES = ['pwa', 'playthrough', 'mobile', 'share', 'lives', 'roll', 'letters', 'pause', 'feel', 'victory-song', 'timer', 'overlays', 'ios'];
 
 function findChrome() {
   if (process.env.CHROME_PATH) return process.env.CHROME_PATH;

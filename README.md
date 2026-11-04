@@ -110,6 +110,8 @@ Los detalles y la puesta en marcha desde cero están en [docs/deployment.md](doc
 
 En el móvil, desde el navegador: **"Añadir a pantalla de inicio"**. Se instala con el icono de la cara de David, se abre a pantalla completa y funciona sin conexión. Más detalles en [docs/pwa.md](docs/pwa.md).
 
+En iPhone, Safari no permite la pantalla completa desde una página web, así que es la única forma de jugar sin la barra del navegador. Por eso, la pantalla de inicio lo sugiere con un aviso en el lateral.
+
 ## Documentación
 
 - [docs/architecture.md](docs/architecture.md): capas, módulos y flujo de datos.

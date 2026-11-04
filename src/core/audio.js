@@ -3,6 +3,18 @@ import { storage } from '../utils/storage.js';
 const MASTER_VOLUME = 0.5;
 const MUTE_KEY = 'dd-muted';
 
+// iOS: a "playback" session keeps sound on when the silent switch is engaged (Safari 17+).
+// Other browsers have no navigator.audioSession, so this is a no-op there.
+function usePlaybackSession() {
+  const session = navigator.audioSession;
+  if (!session || session.type === 'playback') return;
+  try {
+    session.type = 'playback';
+  } catch {
+    /* value rejected by this browser: keep its default session */
+  }
+}
+
 export const midiToFreq = (note) => 440 * Math.pow(2, (note - 69) / 12);
 
 // Thin WebAudio wrapper: owns the context, mix buses and mute state,
@@ -32,6 +44,7 @@ export class AudioEngine {
 
   // Must be called from inside a user gesture (browsers block audio otherwise).
   unlock() {
+    usePlaybackSession();
     if (this.ctx) {
       this.resume();
       return;
@@ -66,7 +79,8 @@ export class AudioEngine {
   }
 
   resume() {
-    if (this.ctx && this.ctx.state !== 'running') this.ctx.resume();
+    // Rejected outside a gesture; the next tap retries.
+    if (this.ctx && this.ctx.state !== 'running') this.ctx.resume().catch(() => {});
   }
 
   suspend() {
