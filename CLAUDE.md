@@ -16,20 +16,62 @@ Juego web de plataformas 2D, regalo de cumpleaños para David. Está publicado e
 - Código, identificadores y comentarios: inglés.
 - Textos visibles para el jugador (`index.html`, `WIN.MESSAGE`, `aria-label`): español.
 - Documentación (`README.md`, `docs/`): español.
-- Commits: inglés, Conventional Commits, con este formato y **sin** líneas de coautor ni atribución a IA:
+- Commits: inglés (detalle en la sección siguiente).
 
-  ```
-  <type>: <short descriptive sentence>
+## Commits y push
 
-  - <change 1>
-  - <change 2>
-  ```
+### Cuándo
 
-## Git e identidad
+- Haz commit y push **solo cuando el usuario lo pida explícitamente**. La aprobación de un commit no vale para el siguiente.
+- Un push a `main` **publica directamente en producción** (Netlify), así que antes de cada push hay que verificar el cambio (ver "Cómo ejecutar y verificar").
+- Cada commit es una unidad coherente: el cambio de código junto con su documentación (`README.md`, `docs/`, `CLAUDE.md`) cuando le afecte.
 
-- El repo es **personal**: `git@github.com:citizen987/game_web_happybirthday.git`.
-- La carpeta vive bajo `~/dev/work/`, donde un `includeIf` global aplica la identidad de trabajo. Por eso el repo tiene en su **configuración local** `user.name=citizen987`, `user.email=rubencodina@gmail.com` y un `core.sshCommand` que usa `~/.ssh/id_ed25519_github_citizen987`. Antes de hacer commit, comprueba con `git config user.email` que sale el correo personal. Nunca hagas commit con la cuenta de trabajo.
-- Haz commit o push solo cuando el usuario lo pida: un push a `main` publica directamente en producción.
+### Identidad (obligatorio)
+
+- El repo es **personal**: `git@github.com:citizen987/game_web_happybirthday.git`, rama `main`.
+- La carpeta vive bajo `~/dev/work/`, donde un `includeIf` global aplica la identidad de **trabajo**. Por eso el repo tiene en su **configuración local**:
+  - `user.name = citizen987`
+  - `user.email = rubencodina@gmail.com`
+  - `core.sshCommand = ssh -i ~/.ssh/id_ed25519_github_citizen987 -o IdentitiesOnly=yes`
+- Antes de cada commit, ejecuta `git config user.email`: debe salir `rubencodina@gmail.com`. Si sale el correo de trabajo o no sale nada, **detente** y vuelve a fijar la config local; nunca hagas commit con la cuenta de trabajo.
+- Si el repo se vuelve a clonar, hay que reaplicar esas tres claves con `git config` (sin `--global`).
+
+### Formato del mensaje
+
+En inglés, siguiendo [Conventional Commits](https://www.conventionalcommits.org/) y exactamente con esta forma:
+
+```
+<type>: <short descriptive sentence>
+
+- <concise change 1>
+- <concise change 2>
+- <concise change 3>
+```
+
+- `type`: `feat`, `fix`, `refactor`, `docs`, `style`, `perf`, `test`, `chore`.
+- Asunto en minúscula tras los dos puntos, en imperativo, sin punto final y de unos 72 caracteres como máximo.
+- Cuerpo: de 1 a 5 viñetas cortas con lo que cambia (no cómo).
+- **Prohibido** añadir `Co-Authored-By`, "Generated with Claude" o cualquier atribución a IA.
+
+Ejemplo real del repo:
+
+```
+refactor: split game into layered ES modules and add docs
+
+- Move head image to assets/ and styles to css/styles.css
+- Split script into core, audio, world, game, render and ui modules
+- Add README, CLAUDE.md, docs folder, netlify.toml and .gitignore
+```
+
+### Pasos
+
+1. `git status` y `git diff`: revisa que solo entra lo previsto. Nada de `.atl/`, `node_modules/` ni archivos temporales.
+2. `git config user.email` → correo personal.
+3. `git add <archivos>` (o `git add -A` si el `status` está limpio de basura).
+4. `git commit -F -` pasando el mensaje con un heredoc, para conservar el formato multilínea.
+5. `git log -1 --format='%an <%ae> | %s'` para confirmar el autor.
+6. `git push`. Después comprueba que https://gamehappybirthday.netlify.app/ sirve la versión nueva (por ejemplo, `curl -sI` a un archivo cambiado).
+7. Nunca hagas `push --force`, reescribas historia publicada ni crees ramas o PRs sin que el usuario lo pida.
 
 ## Arquitectura (resumen)
 
