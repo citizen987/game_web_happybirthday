@@ -17,6 +17,28 @@ export const MAIN_THEME = {
   bassPattern: [0, 12, 7, 12, 0, 12, 7, 12],
 };
 
+// "Happy Birthday to You" (public-domain melody), 3/4. [midi note, beats]; played once on victory.
+export const BIRTHDAY_SONG = {
+  bpm: 118,
+  pickupBeats: 1,
+  melody: [
+    [67, 0.75], [67, 0.25],
+    [69, 1], [67, 1], [72, 1],
+    [71, 2], [67, 0.75], [67, 0.25],
+    [69, 1], [67, 1], [74, 1],
+    [72, 2], [67, 0.75], [67, 0.25],
+    [79, 1], [76, 1], [72, 1],
+    [71, 1], [69, 1], [77, 0.75], [77, 0.25],
+    [76, 1], [72, 1], [74, 1],
+    [72, 3],
+  ],
+  // One root per 3-beat bar after the pickup: C G G C C F G C
+  bassRoots: [48, 43, 43, 48, 48, 41, 43, 48],
+};
+
+// Pause after the goal fanfare before the birthday song starts (s).
+const VICTORY_SONG_DELAY = 1.8;
+
 const LOOKAHEAD_S = 0.12;
 const SCHEDULER_MS = 25;
 
@@ -27,6 +49,7 @@ export class MusicPlayer {
     this.track = track;
     this.stepDur = 60 / track.bpm / 2;
     this.transpose = 0;
+    this.songBus = null;
     this.timer = null;
     this.nextTime = 0;
     this.step = 0;
@@ -49,6 +72,48 @@ export class MusicPlayer {
   stop() {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+    this.stopSong();
+  }
+
+  // Birthday song after the goal fanfare.
+  playVictory() {
+    this.playOnce(BIRTHDAY_SONG, VICTORY_SONG_DELAY);
+  }
+
+  /**
+   * Schedules a whole one-shot song on its own gain node, so stop() can silence it
+   * even though every note was queued in advance.
+   */
+  playOnce(song, delay = 0) {
+    if (!this.audio.ready) return;
+    this.stopSong();
+    const audio = this.audio;
+    const bus = audio.ctx.createGain();
+    bus.connect(audio.musicBus);
+    this.songBus = bus;
+    const beat = 60 / song.bpm;
+    const start = audio.now + delay;
+
+    let t = start;
+    for (const [note, beats] of song.melody) {
+      audio.tone(t, midiToFreq(note), null, beats * beat * 0.92, 'square', 0.2, bus);
+      audio.tone(t, midiToFreq(note + 12), null, Math.min(beats * beat, 0.35), 'triangle', 0.06, bus);
+      t += beats * beat;
+    }
+    let tb = start + song.pickupBeats * beat;
+    for (const root of song.bassRoots) {
+      audio.tone(tb, midiToFreq(root), null, beat * 0.9, 'triangle', 0.32, bus);
+      audio.tone(tb + beat, midiToFreq(root + 7), null, beat * 0.8, 'triangle', 0.22, bus);
+      audio.tone(tb + 2 * beat, midiToFreq(root + 12), null, beat * 0.8, 'triangle', 0.22, bus);
+      tb += 3 * beat;
+    }
+  }
+
+  stopSong() {
+    if (!this.songBus) return;
+    this.songBus.gain.setValueAtTime(0, this.audio.now);
+    this.songBus.disconnect();
+    this.songBus = null;
   }
 
   schedule() {

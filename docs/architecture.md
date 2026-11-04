@@ -140,7 +140,7 @@ Orden dentro de `Game.update`:
 | `render/head-sprite.js` | Reduce la foto, endurece el alfa y añade el contorno de 1 px |
 | `core/input.js` | Teclado y botones táctiles con *hit-test* por puntero (permite deslizar el dedo entre botones) |
 | `core/audio.js` | `AudioEngine`: contexto, buses, silencio persistente y primitivas `tone`/`noise` |
-| `audio/music.js` | Planificador con *lookahead* y el tema principal como datos |
+| `audio/music.js` | Planificador con *lookahead* y el tema principal como datos. `playOnce()` programa una canción completa en su propio `GainNode` (así `stop()` la corta); se usa para "Cumpleaños feliz" al ganar (`playVictory()`) |
 | `game/score.js` | `computeScore({ coins, frames, totalCoins })`: función pura |
 | `core/best-score.js` | Récord personal en `localStorage` |
 | `render/share-card.js` | Tarjeta PNG para compartir (cielo, confeti, foto y puntuación) |

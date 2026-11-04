@@ -95,6 +95,7 @@ export class Game {
     this.setState('win');
     this.endT = 0;
     this.music.stop();
+    this.music.playVictory();
     this.world.events.push('goal');
   }
 

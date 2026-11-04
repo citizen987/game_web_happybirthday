@@ -19,7 +19,7 @@ Juego web de plataformas 2D hecho por **Rubén Codina** como regalo de cumpleañ
 - Plataformas fijas y móviles, huecos, rampas y checkpoints.
 - Enemigos: si los pisas, desaparecen; si te tocan de lado, pierdes las monedas (puedes recuperarlas) y parpadeas durante 2 s.
 - **Vidas:** empiezas con 3. Pierdes una al caer al vacío o al recibir un golpe sin monedas, y reapareces en el último checkpoint. Con 0 vidas la partida termina sin puntuación, pero con la felicitación (y también se puede compartir). Marcador arriba a la izquierda con la cara de David.
-- Música chiptune original y efectos de sonido generados con WebAudio, con botón de silencio.
+- Música chiptune original y efectos de sonido generados con WebAudio, con botón de silencio. Al llegar a la meta suena **"Cumpleaños feliz"** en versión chiptune (melodía de dominio público).
 - Controles táctiles multitáctiles y aviso para girar el móvil cuando está en vertical.
 - **Letras D-A-V-I-D** escondidas por el nivel (+1.000 puntos cada una y +5.000 por formar el nombre). El marcador superior central las ilumina al cogerlas.
 - **Súper David:** con las cinco letras, el pelo de la foto se vuelve dorado, aparece un aura amarilla y suena una versión acelerada de la música. Corre más, acelera más y salta un poco más. Es **invencible a los enemigos** (los destruye al tocarlos), pero las caídas siguen costando vida. Dura hasta la meta y se conserva al reaparecer.

@@ -56,6 +56,7 @@ Sin `?debug` no se expone nada.
 | Añadir un tipo de enemigo | `game/enemies.js` (movimiento y hitbox) + `render/entities-view.js` (dibujo) + `world/level.js` (colocación) |
 | Añadir un sonido | Emitir `world.events.push('nombre')` en `game/` + función `nombre` en `audio/sfx.js` |
 | Cambiar la música | `audio/music.js` → `MAIN_THEME` (notas MIDI, 0 = silencio) |
+| Cambiar la canción de victoria | `audio/music.js` → `BIRTHDAY_SONG` (`[nota MIDI, tiempos]`, en 3/4) y `VICTORY_SONG_DELAY` |
 | Cambiar el texto final | `src/config.js` → `WIN.MESSAGE` (y `LIVES.GAMEOVER_SUBTITLE` para el fin de partida) |
 | Cambiar las vidas iniciales o la animación de muerte | `src/config.js` → `LIVES` |
 | Ajustar rodar o la carga en parado | `src/config.js` → `ROLL` |
